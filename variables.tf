@@ -8,7 +8,7 @@ variable "gcp_project" {
 
 variable "gcp_region" {
   description = "GCP region, or zone if you want single master."
-  default = "us-east1"
+  default     = "us-east1"
 }
 
 variable "gke_username" {

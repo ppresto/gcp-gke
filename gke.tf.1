@@ -49,24 +49,7 @@ module "gcp-gke-kms" {
   source         = "./modules/gcp-kms-unseal"
   gcloud-project = var.gcp_project
   gcloud-region  = var.gcp_region
-  key_ring       = "vaul-autounseal-ring2"
+  key_ring       = "vaul-autounseal-ring"
   #keyring_location = "global"
-  crypto_key = "vault-autounseal-key2"
-}
-
-module "gcp-gke-vault-raft" {
-  source                                 = "./modules/vault-raft"
-  gcp_project                            = var.gcp_project
-  gcp_region                             = var.gcp_region
-  k8s_endpoint                           = "${google_container_cluster.primary.endpoint}"
-  gke_username                           = var.gke_username
-  gke_password                           = var.gke_password
-  #k8sloadconfig                          = true
-  k8s_master_auth_cluster_ca_certificate = "${google_container_cluster.primary.master_auth.0.cluster_ca_certificate}"
-  k8s_master_auth_client_certificate     = "${google_container_cluster.primary.master_auth.0.client_certificate}"
-  k8s_master_auth_client_key             = "${google_container_cluster.primary.master_auth.0.client_key}"
-  k8s_namespace                          = "default"
-  key_ring                               = module.gcp-gke-kms.key_ring
-  #keyring_location = "global"
-  crypto_key                             = module.gcp-gke-kms.crypto_key
+  crypto_key = "vault-autounseal-key"
 }

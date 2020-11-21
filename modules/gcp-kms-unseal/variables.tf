@@ -7,12 +7,11 @@ variable "gcloud-project" {
 }
 
 variable "gcloud-region" {
-  default = "us-east1"
 }
 
-variable "gcloud-zone" {
-  default = "us-east1-b"
-}
+#variable "gcloud-zone" {
+#  default = "us-east1-b"
+#}
 
 variable "account_file_path" {
   description = "Path to GCP account file"
