@@ -44,3 +44,12 @@ resource "google_container_node_pool" "primary_nodes" {
     }
   }
 }
+
+module "gcp-gke-kms" {
+  source = "./modules/gcp-kms-unseal"
+  gcloud-project = var.gcp_project
+  gcloud-region = var.gcp_region
+  key_ring = "vaul-autounseal-ring"
+  keyring_location = "global"
+  crypto_key       = "vault-autounseal-key"
+}

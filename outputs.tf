@@ -17,7 +17,7 @@ output "k8s_master_version" {
 }
 
 output "k8s_instance_group_urls" {
-  value = "${google_container_cluster.primary.instance_group_urls.0}"
+  value = "${google_container_cluster.primary.instance_group_urls}"
 }
 
 output "k8s_master_auth_client_certificate" {

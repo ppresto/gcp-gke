@@ -1,0 +1,36 @@
+server:
+  image:
+    repository: "hashicorp/vault-enterprise"
+    tag: "1.4.2_ent"
+  ha:
+    enabled: true
+    replicas: 3
+    raft:
+      enabled: true
+      config: |
+        ui = true
+        listener "tcp" {
+          tls_disable = 1
+          address = "[::]:8200"
+          cluster_address = "[::]:8201"
+        }
+        storage "raft" {
+          path = "/vault/data"
+            retry_join {
+            leader_api_addr = "http://vault-0.vault-internal:8200"
+          }
+          retry_join {
+            leader_api_addr = "http://vault-1.vault-internal:8200"
+          }
+          retry_join {
+            leader_api_addr = "http://vault-2.vault-internal:8200"
+          }
+        }
+        seal "azurekeyvault" {
+          client_id      = "${client_id}"
+          client_secret  = "${client_secret}"
+          tenant_id      = "${tenant_id}"
+          vault_name     = "${vault_name}"
+          key_name       = "${key_name}"
+        }
+        service_registration "kubernetes" {}
