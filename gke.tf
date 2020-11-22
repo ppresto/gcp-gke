@@ -53,3 +53,22 @@ module "gcp-gke-kms" {
   #keyring_location = "global"
   crypto_key = "vault-autounseal-key"
 }
+
+data "template_file" "init" {
+  template = "${file("${path.module}/templates/values-http.yaml")}"
+  vars = {
+    project     = "${var.gcp_project}"
+    region      = "global"
+    key_ring    = "vaul-autounseal-ring"
+    crypto_key  = "vault-autounseal-key"
+  }
+}
+resource "null_resource" "local" {
+  triggers = {
+    template = "${data.template_file.init.rendered}"
+  }
+
+  provisioner "local-exec" {
+    command = "echo \"${data.template_file.init.rendered}\" > vault.yaml"
+  }
+}
