@@ -3,3 +3,4 @@
 #    * prefix - set it to your name or something unique   
 #-------------------------------------------------------------------------------------------
 prefix="presto"
+gcp_region="us-central-c"

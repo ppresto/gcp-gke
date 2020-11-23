@@ -49,13 +49,13 @@ module "gcp-gke-kms" {
   source         = "./modules/gcp-kms-unseal"
   gcloud-project = var.gcp_project
   gcloud-region  = var.gcp_region
-  key_ring       = "vaul-autounseal-ring"
+  key_ring       = "${var.gcp_region}-vaul-unseal-ring"
   #keyring_location = "global"
-  crypto_key = "vault-autounseal-key"
+  crypto_key = "${var.gcp_region}-vault-unseal-key"
 }
 
 data "template_file" "init" {
-  template = "${file("${path.module}/templates/values-http.yaml")}"
+  template = "${file("${path.module}/templates/override-values-http.yaml")}"
   vars = {
     project     = "${var.gcp_project}"
     region      = "global"
