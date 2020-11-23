@@ -49,9 +49,9 @@ module "gcp-gke-kms" {
   source         = "./modules/gcp-kms-unseal"
   gcloud-project = var.gcp_project
   gcloud-region  = var.gcp_region
-  key_ring       = "${var.gcp_region}-vaul-unseal-ring"
-  #keyring_location = "global"
-  crypto_key = "${var.gcp_region}-vault-unseal-key"
+  keyring_location = "global"
+  key_ring    = "${var.gcp_region}-${key_ring}"
+  crypto_key  = "${var.gcp_region}-${crypto_key}"
 }
 
 data "template_file" "init" {
@@ -59,8 +59,8 @@ data "template_file" "init" {
   vars = {
     project     = "${var.gcp_project}"
     region      = "global"
-    key_ring    = "vaul-autounseal-ring"
-    crypto_key  = "vault-autounseal-key"
+    key_ring    = "${var.gcp_region}-${key_ring}"
+    crypto_key  = "${var.gcp_region}-${crypto_key}"
   }
 }
 resource "null_resource" "local" {

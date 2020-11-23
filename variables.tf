@@ -25,3 +25,10 @@ variable "gke_num_nodes" {
   default     = 3
   description = "number of gke nodes"
 }
+
+variable "key_ring" {
+  default     = "vault-unseal-ring"
+}
+variable "crypto_key" {
+  default     = "vault-unseal-key"
+}
