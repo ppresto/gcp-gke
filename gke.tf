@@ -1,7 +1,8 @@
 # GKE cluster
 resource "google_container_cluster" "primary" {
   name     = "${var.prefix}-gke"
-  location = var.gcp_region
+  #location = var.gcp_region
+  location   = var.gcp_zone
 
   remove_default_node_pool = true
   initial_node_count       = 1
@@ -22,6 +23,7 @@ resource "google_container_cluster" "primary" {
 # Separately Managed Node Pool
 resource "google_container_node_pool" "primary_nodes" {
   name       = "${google_container_cluster.primary.name}-node-pool"
+  #location = var.gcp_region
   location   = var.gcp_zone
   cluster    = google_container_cluster.primary.name
   node_count = var.gke_num_nodes
@@ -62,14 +64,11 @@ data "template_file" "init" {
     region      = "global"
     key_ring    = "${var.gcp_region}-${var.key_ring}"
     crypto_key  = "${var.gcp_region}-${var.crypto_key}"
+    replicas    = "${var.gke_num_nodes}"
   }
 }
-resource "null_resource" "local" {
-  triggers = {
-    template = "${data.template_file.init.rendered}"
-  }
 
-  provisioner "local-exec" {
-    command = "echo \"${data.template_file.init.rendered}\" > vault.yaml"
-  }
+resource "local_file" "foo" {
+  content     = data.template_file.init.rendered
+  filename = "vault.yaml"
 }

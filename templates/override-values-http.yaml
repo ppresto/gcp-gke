@@ -38,10 +38,10 @@ server:
   # we need to define custom readiness/liveness Probe settings
   readinessProbe:
     enabled: true
-    path: "/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204"
+    path: '/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204'
   livenessProbe:
     enabled: true
-    path: "/v1/sys/health?standbyok=true"
+    path: '/v1/sys/health?standbyok=true'
     initialDelaySeconds: 60
 
   # extraEnvironmentVars is a list of extra enviroment variables to set with the stateful set. These could be
@@ -70,7 +70,7 @@ server:
   # Run Vault in "HA" mode.
   ha:
     enabled: true
-    replicas: 5
+    replicas: "${replicas}"
     raft:
       enabled: true
       setNodeId: true
@@ -93,12 +93,6 @@ server:
           }
           retry_join {
             leader_api_addr = "https://vault-2.vault-internal:8200"
-          }
-          retry_join {
-              leader_api_addr = "https://vault-3.vault-internal:8200"
-          }
-          retry_join {
-              leader_api_addr = "https://vault-4.vault-internal:8200"
           }
         }
 
