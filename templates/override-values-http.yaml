@@ -70,15 +70,15 @@ server:
   # Run Vault in "HA" mode.
   ha:
     enabled: true
-    replicas: "${replicas}"
+    replicas: ${replicas}
     raft:
       enabled: true
       setNodeId: true
 
       config: |
         ui = true
-        tls_disable = 1
         listener "tcp" {
+          tls_disable = 1
           address = "[::]:8200"
           cluster_address = "[::]:8201"
         }
