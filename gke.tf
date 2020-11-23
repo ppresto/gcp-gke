@@ -22,7 +22,7 @@ resource "google_container_cluster" "primary" {
 # Separately Managed Node Pool
 resource "google_container_node_pool" "primary_nodes" {
   name       = "${google_container_cluster.primary.name}-node-pool"
-  location   = var.gcp_region
+  location   = var.gcp_zone
   cluster    = google_container_cluster.primary.name
   node_count = var.gke_num_nodes
 
@@ -30,11 +30,13 @@ resource "google_container_node_pool" "primary_nodes" {
     oauth_scopes = [
       "https://www.googleapis.com/auth/logging.write",
       "https://www.googleapis.com/auth/monitoring",
+      "https://www.googleapis.com/auth/cloud-platform"
     ]
 
     labels = {
       env = var.prefix
     }
+    tags = ["kubernetes", "vault"]
 
     # preemptible  = true
     machine_type = "n1-standard-1"
