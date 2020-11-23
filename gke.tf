@@ -36,7 +36,6 @@ resource "google_container_node_pool" "primary_nodes" {
     labels = {
       env = var.prefix
     }
-    tags = ["kubernetes", "vault"]
 
     # preemptible  = true
     machine_type = "n1-standard-1"
