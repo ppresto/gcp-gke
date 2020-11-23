@@ -50,8 +50,8 @@ module "gcp-gke-kms" {
   gcloud-project = var.gcp_project
   gcloud-region  = var.gcp_region
   keyring_location = "global"
-  key_ring    = "${var.gcp_region}-${key_ring}"
-  crypto_key  = "${var.gcp_region}-${crypto_key}"
+  key_ring    = "${var.gcp_region}-${var.key_ring}"
+  crypto_key  = "${var.gcp_region}-${var.rypto_key}"
 }
 
 data "template_file" "init" {
@@ -59,8 +59,8 @@ data "template_file" "init" {
   vars = {
     project     = "${var.gcp_project}"
     region      = "global"
-    key_ring    = "${var.gcp_region}-${key_ring}"
-    crypto_key  = "${var.gcp_region}-${crypto_key}"
+    key_ring    = "${var.gcp_region}-${var.key_ring}"
+    crypto_key  = "${var.gcp_region}-${var.crypto_key}"
   }
 }
 resource "null_resource" "local" {
