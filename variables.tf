@@ -7,8 +7,12 @@ variable "gcp_project" {
 }
 
 variable "gcp_region" {
-  description = "GCP region, or zone if you want single master."
+  description = "GCP region"
   default     = "us-east1"
+}
+variable "gcp_zone" {
+  description = "GCP zone will deploy a single master.  Use region instead for multi-master deployment (HA)"
+  default     = "us-east1-c"
 }
 
 variable "gke_username" {
