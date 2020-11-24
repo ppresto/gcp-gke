@@ -90,6 +90,8 @@ joinRaftPeers() {
             echo "kubectl exec --kubeconfig ${config} --namespace ${ns} -ti ${peer} -- vault operator raft join http://${init_inst}.vault-internal:8200"
             sleep 5
             kubectl exec --kubeconfig ${config} --namespace ${ns} -ti ${peer} -- vault operator raft join http://${init_inst}.vault-internal:8200
+        else
+            echo "Skipping $peer. Initialized already"
         fi
     done
 }
@@ -108,10 +110,21 @@ getRaftListPeers() {
 }
 
 installLicense () {
-    echo "\nChecking Enterprise License\n"
+    # Login and Get Token
+    VAULT_ROOT_TOKEN=$(cat ${GITDIR}/tmp/cluster-keys.json | jq -r ".root_token")
+    echo $?
+    if [[ -z $VAULT_ROOT_TOKEN ]]; then
+        echo "Failed to get login token"
+        exit
+    fi
+    VAULT_TOKEN=$(kubectl exec --kubeconfig ${config} --namespace ${ns} -ti ${init_inst} -- vault login ${VAULT_ROOT_TOKEN} -format="json" | jq -r ".auth.client_token")
+    
+    
+    echo -e "\nChecking Enterprise License\n"
     kubectl port-forward --kubeconfig ${config} --namespace ${ns} vault-0 8200:8200 &
     sleep 5
-    VAULT_ADDR=$(kubectl --kubeconfig ${config} --namespace ${ns} describe pod ${init_inst} | grep VAULT_ADDR | awk '{ print $NF }')
+    #VAULT_ADDR=$(kubectl --kubeconfig ${config} --namespace ${ns} describe pod ${init_inst} | grep VAULT_ADDR | awk '{ print $NF }')
+    VAULT_ADDR="http://127.0.0.1:8200"
     echo $VAULT_ADDR
     echo "\nChecking Enterprise License: ${VAULT_ADDR}/v1/sys/license \n"
     cur_lic=$(curl -k --header "X-Vault-Token: ${VAULT_TOKEN}" ${VAULT_ADDR}/v1/sys/license)
@@ -148,5 +161,5 @@ sleep 10
 
 initializeVault
 joinRaftPeers
-getRaftListPeers
-#installLicense
+#getRaftListPeers
+installLicense
