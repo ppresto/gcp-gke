@@ -13,8 +13,8 @@ else
 fi
 
 # K8s namespace is needed to lookup vault information
-if [[ $(terraform output -state=${DIR}/../terraform.tfstate gke_namespace) ]]; then
-  ns=$(terraform output -state=${DIR}/../terraform.tfstate gke_namespace)
+if [[ $(terraform output -state=${GITDIR}/terraform.tfstate gke_namespace) ]]; then
+  ns=$(terraform output -state=${GITDIR}/terraform.tfstate gke_namespace)
 else
   ns="default"
 fi
