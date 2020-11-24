@@ -130,7 +130,7 @@ installLicense () {
     echo -e "\nChecking Enterprise License: ${VAULT_ADDR}/v1/sys/license \n"
     cur_lic=$(curl -k --header "X-Vault-Token: ${VAULT_TOKEN}" ${VAULT_ADDR}/v1/sys/license)
     if [[ $(echo $cur_lic | jq -r '.data.license_id' | grep temporary | grep -v grep) ]]; then
-        echo "Found License: $cur_lic | jq -r '.data.license_id'
+        echo "Found License: $cur_lic | jq -r '.data.license_id'"
         echo -e "\nInstalling Enterprise License"
         output=$(curl -k -s \
             --header "X-Vault-Token: ${VAULT_TOKEN}" \
