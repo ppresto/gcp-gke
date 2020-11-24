@@ -8,6 +8,11 @@ output "region" {
   description = "region"
 }
 
+output "zone" {
+  value       = var.gcp_zone
+  description = "zone"
+}
+
 output "k8s_endpoint" {
   value = "${google_container_cluster.primary.endpoint}"
 }

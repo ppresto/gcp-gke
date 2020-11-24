@@ -30,6 +30,11 @@ variable "gke_num_nodes" {
   description = "number of gke nodes"
 }
 
+variable "gke_namespace" {
+  default     = "default"
+  description = "Kubernetes Vault Namespace"
+}
+
 variable "key_ring" {
   default     = "vault-unseal-ring"
 }

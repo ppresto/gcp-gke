@@ -7,8 +7,8 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 SERVICE=vault-internal
 
 # NAMESPACE where the Vault service is running.
-if [[ $(terraform output -state=${DIR}/../terraform.tfstate K8s_namespace) ]]; then
-  NAMESPACE=$(terraform output -state=${DIR}/../terraform.tfstate K8s_namespace)
+if [[ $(terraform output -state=${DIR}/../terraform.tfstate gke_namespace) ]]; then
+  NAMESPACE=$(terraform output -state=${DIR}/../terraform.tfstate gke_namespace)
 elif [[ ! -z "${1}" ]]; then
   NAMESPACE="${1}"
 else

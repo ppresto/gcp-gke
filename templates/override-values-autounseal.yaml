@@ -19,6 +19,16 @@ injector:
   #      cpu: 250m
 
 server:
+  extraEnvironmentVars:
+    GOOGLE_REGION: global
+    GOOGLE_PROJECT: ${project}
+    GOOGLE_APPLICATION_CREDENTIALS: /vault/userconfig/kms-creds/credential_key.json
+    VAULT_CLUSTER_ADDR: "https://$(HOSTNAME):8201"
+
+  extraVolumes:
+    - type: 'secret'
+      name: 'kms-creds'
+
   # Use the Enterprise Image
   image:
     repository: "hashicorp/vault-enterprise"
@@ -36,13 +46,13 @@ server:
 
   # For HA configuration and because we need to manually init the vault,
   # we need to define custom readiness/liveness Probe settings
-  #readinessProbe:
-  #  enabled: true
-  #  path: '/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204'
-  #livenessProbe:
-  #  enabled: true
-  #  path: '/v1/sys/health?standbyok=true'
-  #  initialDelaySeconds: 60
+  readinessProbe:
+    enabled: true
+    path: '/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204'
+  livenessProbe:
+    enabled: true
+    path: '/v1/sys/health?standbyok=true'
+    initialDelaySeconds: 60
 
   # extraEnvironmentVars is a list of extra enviroment variables to set with the stateful set. These could be
   # used to include variables required for auto-unseal.
@@ -94,6 +104,13 @@ server:
           retry_join {
             leader_api_addr = "https://vault-2.vault-internal:8200"
           }
+        }
+
+        seal "gcpckms" {
+          project     = "${project}"
+          region      = "${region}"
+          key_ring    = "${key_ring}"
+          crypto_key  = "${crypto_key}"
         }
 
         service_registration "kubernetes" {}
