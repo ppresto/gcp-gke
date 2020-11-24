@@ -14,15 +14,15 @@ output "zone" {
 }
 
 output "k8s_endpoint" {
-  value = "${google_container_cluster.primary.endpoint}"
+  value = google_container_cluster.primary.endpoint
 }
 
 output "k8s_master_version" {
-  value = "${google_container_cluster.primary.master_version}"
+  value = google_container_cluster.primary.master_version
 }
 
 output "k8s_instance_group_urls" {
-  value = "${google_container_cluster.primary.instance_group_urls}"
+  value = google_container_cluster.primary.instance_group_urls
 }
 
 #output "k8s_master_auth_client_certificate" {

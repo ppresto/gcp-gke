@@ -58,13 +58,13 @@ module "gcp-gke-kms" {
 }
 
 data "template_file" "init" {
-  template = "${file("${path.module}/templates/override-values-autounseal.yaml")}"
+  template = file("${path.module}/templates/override-values-autounseal.yaml")
   vars = {
-    project     = "${var.gcp_project}"
+    project     = var.gcp_project
     region      = "global"
     key_ring    = "${var.gcp_region}-${var.key_ring}"
     crypto_key  = "${var.gcp_region}-${var.crypto_key}"
-    replicas    = "${var.gke_num_nodes}"
+    replicas    = var.gke_num_nodes
   }
 }
 
