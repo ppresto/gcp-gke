@@ -85,7 +85,7 @@ joinRaftPeers() {
         # If pod status is 1/1 Ready
         echo "Checking Peer: $peer"
         # If vault status shows instance Initialzed = "false"
-        if [[ $(kubectl exec -it vault-1 -- vault status | grep "Initialized" | grep "false" | wc -l) -gt 0 ]]; then
+        if [[ $(kubectl exec -it ${peer} -- vault status | grep "Initialized" | grep "false" | wc -l) -gt 0 ]]; then
             echo "\nJoining Peer: ${peer}"
             echo "kubectl exec --kubeconfig ${config} --namespace ${ns} -ti ${peer} -- vault operator raft join http://${init_inst}.vault-internal:8200"
             sleep 5
@@ -96,13 +96,13 @@ joinRaftPeers() {
 
 getRaftListPeers() {
     echo "\nVault List Peers"
-    export VAULT_ROOT_TOKEN=$(cat ${GITDIR}/tmp/cluster-keys.json | jq -r ".root_token")
+    VAULT_ROOT_TOKEN=$(cat ${GITDIR}/tmp/cluster-keys.json | jq -r ".root_token")
     echo $?
     if [[ -z $VAULT_ROOT_TOKEN ]]; then
         echo "Failed to get login token"
         exit
     fi
-    export VAULT_TOKEN=$(kubectl exec --kubeconfig ${config} --namespace ${ns} -ti ${init_inst} -- vault login ${VAULT_ROOT_TOKEN} -format="json" | jq -r ".auth.client_token")
+    VAULT_TOKEN=$(kubectl exec --kubeconfig ${config} --namespace ${ns} -ti ${init_inst} -- vault login ${VAULT_ROOT_TOKEN} -format="json" | jq -r ".auth.client_token")
     #echo "export VAULT_TOKEN=$(kubectl exec -ti ${init_inst} -- vault login ${VAULT_ROOT_TOKEN} -format='json' | jq -r '.auth.client_token')"
     kubectl exec --kubeconfig ${config} --namespace ${ns} -ti ${init_inst} -- vault operator raft list-peers
 }
@@ -144,8 +144,9 @@ else
     echo "Vault Cluster is not all running.  Exit"
     exit
 fi
+sleep 10
 
 initializeVault
 joinRaftPeers
 getRaftListPeers
-installLicense
+#installLicense
