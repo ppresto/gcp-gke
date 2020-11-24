@@ -58,7 +58,7 @@ module "gcp-gke-kms" {
 }
 
 data "template_file" "init" {
-  template = "${file("${path.module}/templates/override-values-http.yaml")}"
+  template = "${file("${path.module}/templates/override-values-autounseal.yaml")}"
   vars = {
     project     = "${var.gcp_project}"
     region      = "global"
