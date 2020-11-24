@@ -43,26 +43,11 @@ spec:
         fieldRef:
           apiVersion: v1
           fieldPath: metadata.name
-    - name: VAULT_CLUSTER_ADDR
-      value: https://vault-0.vault-internal:8201
-    - name: VAULT_RAFT_NODE_ID
-      valueFrom:
-        fieldRef:
-          apiVersion: v1
-          fieldPath: metadata.name
-    - name: VAULT_CACERT
-      value: /vault/userconfig/vault-server-tls/vault.ca
-    - name: VAULT_CLIENT_CERT
-      value: /vault/userconfig/vault-server-tls/vault.crt
-    - name: VAULT_CLIENT_KEY
-      value: /vault/userconfig/vault-server-tls/vault.key
-    - name: VAULT_LOG_LEVEL
-      value: debug
     volumeMounts:
     - mountPath: /vault/config
       name: config
-    - mountPath: /vault/userconfig/vault-server-tls
-      name: vault-server-tls
+    - mountPath: /vault/userconfig/kms-creds
+      name: kms-creds
       readOnly: true
 
   volumes:
@@ -70,7 +55,7 @@ spec:
       defaultMode: 420
       name: vault-config
     name: config
-  - name: vault-server-tls
+  - name: kms-creds
     secret:
       defaultMode: 420
-      secretName: vault-server-tls
+      secretName: kms-creds

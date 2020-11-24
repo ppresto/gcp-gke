@@ -23,7 +23,7 @@ server:
     GOOGLE_REGION: global
     GOOGLE_PROJECT: ${project}
     GOOGLE_APPLICATION_CREDENTIALS: /vault/userconfig/kms-creds/credential_key.json
-    VAULT_CLUSTER_ADDR: "http://$(HOSTNAME):8201"
+    #VAULT_CLUSTER_ADDR: "http://$(HOSTNAME):8201"
 
   extraVolumes:
     - type: 'secret'
@@ -49,10 +49,10 @@ server:
   readinessProbe:
     enabled: true
     path: '/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204'
-  livenessProbe:
-    enabled: true
-    path: '/v1/sys/health?standbyok=true'
-    initialDelaySeconds: 60
+  #livenessProbe:
+  #  enabled: true
+  #  path: '/v1/sys/health?standbyok=true'
+  #  initialDelaySeconds: 60
 
   # extraEnvironmentVars is a list of extra enviroment variables to set with the stateful set. These could be
   # used to include variables required for auto-unseal.
@@ -71,8 +71,8 @@ server:
 
   # This configures the Vault Statefulset to create a PVC for audit logs.
   # See https://www.vaultproject.io/docs/audit/index.html to know more
-  auditStorage:
-    enabled: true
+  #auditStorage:
+  #  enabled: true
 
   standalone:
     enabled: false
