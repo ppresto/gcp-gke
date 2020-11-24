@@ -40,3 +40,7 @@ output "k8s_instance_group_urls" {
 output "crypto_key_id" {
   value = "${module.gcp-gke-kms.location}/${module.gcp-gke-kms.key_ring}/${module.gcp-gke-kms.crypto_key}"
 }
+
+output "gke_namespace" {
+  value = var.gke_namespace
+}
