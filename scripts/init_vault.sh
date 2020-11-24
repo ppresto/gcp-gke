@@ -111,6 +111,7 @@ getRaftListPeers() {
 
 installLicense () {
     # Login and Get Token
+    echo -e "\n Logging into Vault to get Token"
     VAULT_ROOT_TOKEN=$(cat ${GITDIR}/tmp/cluster-keys.json | jq -r ".root_token")
     echo $?
     if [[ -z $VAULT_ROOT_TOKEN ]]; then
@@ -120,17 +121,17 @@ installLicense () {
     VAULT_TOKEN=$(kubectl exec --kubeconfig ${config} --namespace ${ns} -ti ${init_inst} -- vault login ${VAULT_ROOT_TOKEN} -format="json" | jq -r ".auth.client_token")
     
     
-    echo -e "\nChecking Enterprise License\n"
-    kubectl port-forward --kubeconfig ${config} --namespace ${ns} vault-0 8200:8200 &
+    echo -e "\nSetting up port-forward to ${init_inst}"
+    kubectl port-forward --kubeconfig ${config} --namespace ${ns} ${init_inst} 8200:8200 &
     sleep 5
     #VAULT_ADDR=$(kubectl --kubeconfig ${config} --namespace ${ns} describe pod ${init_inst} | grep VAULT_ADDR | awk '{ print $NF }')
     VAULT_ADDR="http://127.0.0.1:8200"
     echo $VAULT_ADDR
-    echo "\nChecking Enterprise License: ${VAULT_ADDR}/v1/sys/license \n"
+    echo -e "\nChecking Enterprise License: ${VAULT_ADDR}/v1/sys/license \n"
     cur_lic=$(curl -k --header "X-Vault-Token: ${VAULT_TOKEN}" ${VAULT_ADDR}/v1/sys/license)
     if [[ $(echo $cur_lic | jq -r '.data.license_id' | grep temporary | grep -v grep) ]]; then
-        echo $cur_lic | jq -r '.data.license_id'
-        echo "\nInstalling License"
+        echo "Found License: $cur_lic | jq -r '.data.license_id'
+        echo -e "\nInstalling Enterprise License"
         output=$(curl -k -s \
             --header "X-Vault-Token: ${VAULT_TOKEN}" \
             --request PUT \
@@ -151,7 +152,7 @@ installLicense () {
 #
 isVaultRunning
 if [[ $? -eq 0 ]]; then
-    echo "\nVault is Running"
+    echo -e "\nVault is Running"
     kubectl get --kubeconfig ${config} --namespace ${ns} pods
 else
     echo "Vault Cluster is not all running.  Exit"
