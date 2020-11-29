@@ -6,6 +6,7 @@ if [[ ! -d ${DIR}/tmp ]]; then
 fi
 # Using zone for the region in tf makes smaller GKS footprint
 echo ${GOOGLE_CREDENTIALS} > ${DIR}/tmp/credential_key.json
+prefix=$(terraform output -state=${DIR}/terraform.tfstate prefix)
 gcp_region=$(terraform output -state=${DIR}/terraform.tfstate region)
 gcp_zone=$(terraform output -state=${DIR}/terraform.tfstate zone)
 gcp_cluster_name=$(terraform output -state=${DIR}/terraform.tfstate kubernetes_cluster_name)
@@ -25,7 +26,13 @@ else
     echo "Secret: exists to support Auto Unseal with GCP KMS"; 
 fi
 
-kubectl config get-contexts -o=name
-# kubectl config rename-context CONTEXT_NAME NEW_NAME
-kubectl config use-context ${gcp_gke_context}
-kubectl config current-context
+# Set Kubernetes context for current GKE cluster
+if [[ $(kubectl config get-contexts -o=name | grep ${gcp_gke_context}) ]]; then
+  # Rename context to $prefix for simplicity
+  kubectl config rename-context ${gcp_gke_context} ${prefix}
+fi
+kubectl config use-context ${prefix}
+
+# kubectl config current-context
+# kubectl config view -minify
+# kubectl config get-contexts -o=name
