@@ -37,7 +37,7 @@ resource "google_container_node_pool" "primary_nodes" {
 
     labels = {
       env = var.prefix
-      region = var.region
+      region = var.gcp_region
     }
 
     # preemptible  = true

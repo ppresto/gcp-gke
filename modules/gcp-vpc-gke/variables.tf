@@ -38,3 +38,7 @@ variable "gke_namespace" {
   default     = "default"
   description = "Kubernetes Vault Namespace"
 }
+
+variable k8sloadconfig {
+    default = ""
+}
