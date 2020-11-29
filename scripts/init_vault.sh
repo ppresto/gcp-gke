@@ -2,7 +2,14 @@
 
 # Vars
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-GITDIR=/root/gcp-gke
+PWD=$(echo $PWD)
+
+if [[ ! -z $1 ]]; then
+    GITDIR="${1}"
+else
+    GITDIR=${PWD}
+fi
+
 timeout=420
 vRunning=""
 
