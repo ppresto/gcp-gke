@@ -18,38 +18,6 @@ module "gcp-gke-kms" {
   crypto_key  = "${var.gcp_region}-${var.crypto_key}"
 }
 
-provider "helm" {
-  kubernetes {
-    load_config_file = var.k8sloadconfig != "" ? var.k8sloadconfig : "true"
-    host     = module.gcp-vpc-gke.k8s_endpoint
-    username = var.gke_username
-    password = var.gke_password
-
-    client_certificate     = base64decode(module.gcp-vpc-gke.k8s_master_auth_client_certificate)
-    client_key             = base64decode(module.gcp-vpc-gke.k8s_master_auth_client_key)
-    cluster_ca_certificate = base64decode(module.gcp-vpc-gke.k8s_master_auth_cluster_ca_certificate)
-  }
-}
-
-resource "helm_release" "vault" {
-  name       = "vault"
-  repository = "https://helm.releases.hashicorp.com" 
-  chart      = "vault"
-  namespace  = var.gke_namespace
-  wait       = true
-  timeout    = "120"
-
-  values = [
-    templatefile("../${path.module}/templates/override-values-autounseal.yaml", { 
-      project     = var.gcp_project
-      region      = "global"
-      key_ring    = "${var.gcp_region}-${var.key_ring}"
-      crypto_key  = "${var.gcp_region}-${var.crypto_key}"
-      replicas    = var.gke_num_nodes
-    })
-  ]
-}
-
 data "template_file" "init" {
   template = file("../${path.module}/templates/override-values-autounseal.yaml")
   vars = {
@@ -61,7 +29,7 @@ data "template_file" "init" {
   }
 }
 
-resource "local_file" "foo" {
+resource "local_file" "helm-override" {
   content     = data.template_file.init.rendered
   filename = "../vault.yaml"
 }
