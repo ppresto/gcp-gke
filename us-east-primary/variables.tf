@@ -15,6 +15,10 @@ variable "gcp_zone" {
   default     = "us-east1-c"
 }
 
+variable "ip_cidr_range" {
+  default = "10.10.0.0/24"
+}
+
 variable "gke_username" {
   default     = ""
   description = "gke username"

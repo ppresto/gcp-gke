@@ -40,7 +40,7 @@ resource "helm_release" "vault" {
   timeout    = "120"
 
   values = [
-    templatefile("${path.module}/templates/override-values-autounseal.yaml", { 
+    templatefile("../${path.module}/templates/override-values-autounseal.yaml", { 
       project     = var.gcp_project
       region      = "global"
       key_ring    = "${var.gcp_region}-${var.key_ring}"
@@ -51,7 +51,7 @@ resource "helm_release" "vault" {
 }
 
 data "template_file" "init" {
-  template = file("${path.module}/templates/override-values-autounseal.yaml")
+  template = file("../${path.module}/templates/override-values-autounseal.yaml")
   vars = {
     project     = var.gcp_project
     region      = "global"
@@ -63,5 +63,5 @@ data "template_file" "init" {
 
 resource "local_file" "foo" {
   content     = data.template_file.init.rendered
-  filename = "vault.yaml"
+  filename = "../vault.yaml"
 }
