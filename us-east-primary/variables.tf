@@ -39,6 +39,10 @@ variable "gke_namespace" {
   description = "Kubernetes Vault Namespace"
 }
 
+variable k8sloadconfig {
+    default = ""
+}
+
 variable "key_ring" {
   default     = "vault-unseal-ring"
 }
