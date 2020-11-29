@@ -1,7 +1,9 @@
 #!/bin/bash
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-GITDIR=/root/gcp-gke
 
+if [[ ! -d ${DIR}/tmp ]]; then
+  mkdir -p ${DIR}/tmp
+fi
 # Using zone for the region in tf makes smaller GKS footprint
 echo ${GOOGLE_CREDENTIALS} > ${DIR}/tmp/credential_key.json
 gcp_region=$(terraform output -state=${DIR}/terraform.tfstate region)

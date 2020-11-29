@@ -40,7 +40,7 @@ variable "gke_namespace" {
 }
 
 variable k8sloadconfig {
-    default = true
+    default = ""
 }
 
 variable "key_ring" {
