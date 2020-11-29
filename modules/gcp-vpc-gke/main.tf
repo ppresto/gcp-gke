@@ -1,6 +1,6 @@
 # GKE cluster
 resource "google_container_cluster" "primary" {
-  name     = "${gcp_region}-gke-${var.prefix}"
+  name     = "${var.gcp_region}-gke-${var.prefix}"
   #location = var.gcp_region
   location   = var.gcp_zone
 
@@ -42,7 +42,7 @@ resource "google_container_node_pool" "primary_nodes" {
 
     # preemptible  = true
     machine_type = "n1-standard-1"
-    tags         = ["gke-node", "${gcp_region}-gke-${var.prefix}"]
+    tags         = ["gke-node", "${var.gcp_region}-gke-${var.prefix}"]
     metadata = {
       disable-legacy-endpoints = "true"
     }

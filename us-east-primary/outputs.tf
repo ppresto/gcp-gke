@@ -1,5 +1,5 @@
 output "kubernetes_cluster_name" {
-  value       = google_container_cluster.primary.name
+  value       = module.gcp-vpc-gke.kubernetes_cluster_name
   description = "GKE Cluster Name"
 }
 
