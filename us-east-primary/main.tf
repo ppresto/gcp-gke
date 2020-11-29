@@ -1,5 +1,5 @@
 module "gcp-vpc-gke" {
-  source         = "./modules/gcp-vpc-gke"
+  source         = "../modules/gcp-vpc-gke"
   prefix        = var.prefix
   gcp_project = var.gcp_project
   gcp_region  = var.gcp_region
@@ -10,7 +10,7 @@ module "gcp-vpc-gke" {
 }
 
 module "gcp-gke-kms" {
-  source         = "./modules/gcp-kms-unseal"
+  source         = "../modules/gcp-kms-unseal"
   gcloud-project = var.gcp_project
   gcloud-region  = var.gcp_region
   keyring_location = "global"
