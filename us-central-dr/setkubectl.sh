@@ -8,6 +8,7 @@ gcp_region=$(terraform output -state=${DIR}/terraform.tfstate region)
 gcp_cluster_name=$(terraform output -state=${DIR}/terraform.tfstate kubernetes_cluster_name)
 gcp_gke_context=$(terraform output -state=${DIR}/terraform.tfstate context)
 
+
 gcloud auth activate-service-account --key-file=${DIR}/tmp/credential_key.json
 gcloud config set project ${INSTRUQT_GCP_PROJECT_GCP_PROJECT_PROJECT_ID}
 gcloud config set compute/region ${gcp_region}

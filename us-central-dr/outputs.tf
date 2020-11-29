@@ -44,3 +44,8 @@ output "crypto_key_id" {
 output "gke_namespace" {
   value = var.gke_namespace
 }
+
+# Kubernetes context.  Update gcp_zone to region depending on how you build your cluster.
+output "context" {
+  value = "gke_${var.gcp_project}_${var.gcp_zone}_${var.prefix}
+}
