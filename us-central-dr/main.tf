@@ -31,5 +31,5 @@ data "template_file" "init" {
 
 resource "local_file" "helm-override" {
   content     = data.template_file.init.rendered
-  filename = "../vault.yaml"
+  filename = "vault.yaml"
 }
