@@ -95,10 +95,10 @@ joinRaftPeers() {
         echo "Checking Peer: $peer"
         # If vault status shows instance Initialzed = "false"
         if [[ $(kubectl exec -it ${peer} -- vault status | grep "Initialized" | grep "false" | wc -l) -gt 0 ]]; then
-            echo "\nJoining Peer: ${peer}"
-            echo "kubectl exec --kubeconfig ${config} --namespace ${ns} -ti ${peer} -- vault operator raft join http://${init_inst}.vault-internal:8200"
+            echo "\nJoining Peer: ${peer} to http://${init_inst}.${init_inst%-*}-internal:8200"
+            echo "kubectl exec --kubeconfig ${config} --namespace ${ns} -ti ${peer} -- vault operator raft join http://${init_inst}.${init_inst%-*}-internal:8200"
             sleep 5
-            kubectl exec --kubeconfig ${config} --namespace ${ns} -ti ${peer} -- vault operator raft join http://${init_inst}.vault-internal:8200
+            kubectl exec --kubeconfig ${config} --namespace ${ns} -ti ${peer} -- vault operator raft join http://${init_inst}.${init_inst%-*}-internal:8200
         else
             echo "Skipping $peer. Initialized already"
         fi
