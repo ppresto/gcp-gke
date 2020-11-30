@@ -33,3 +33,10 @@ kubectl config use-context
 kubectl config get-contexts
 kubectl config rename-context 
 ```
+
+## DR Replication
+
+### dcanadillas (resolver_discover_servers)
+https://gist.github.com/dcanadillas/8448a3ba6652f8fe120c011f1825555e
+### GKE + VM replication Architecture
+https://github.com/dcanadillas/vault-gke#architecture-to-be-deployed
