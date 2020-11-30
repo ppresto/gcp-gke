@@ -8,7 +8,11 @@ vRunning=""
 config="$HOME/.kube/config"
 
 # Set this to one of your pod names.
-init_inst="vault-primary-0"
+if [[ $(helm list -o json | jq -r '.[].name' | grep vault) ]]; then
+    init_inst="$(helm list -o json | jq -r '.[].name' | grep vault)"
+else
+    init_inst="vault-0"
+fi
 
 # GITDIR should be the working directory with your terraform.tfstate file.
 if [[ ! -z $1 ]]; then
