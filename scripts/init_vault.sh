@@ -142,7 +142,7 @@ installLicense () {
         output=$(curl -k -s \
             --header "X-Vault-Token: ${VAULT_TOKEN}" \
             --request PUT \
-            --data @${GITDIR}/tmp/vault-ent.hclic \
+            --data @${GITDIR}/../tmp/vault-ent.hclic \
             ${VAULT_ADDR}/v1/sys/license)
         cur_lic=$(curl -k -s --header "X-Vault-Token: ${VAULT_TOKEN}" ${VAULT_ADDR}/v1/sys/license)
         echo $cur_lic | jq -r
