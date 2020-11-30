@@ -17,6 +17,8 @@ if [[ ! $(gcloud auth list | grep ${client_email}) ]]; then
   gcloud config set project ${INSTRUQT_GCP_PROJECT_GCP_PROJECT_PROJECT_ID}
   gcloud config set compute/region ${gcp_region}
   gcloud container clusters get-credentials ${gcp_cluster_name} --region ${gcp_zone}
+else
+  gcloud container clusters get-credentials ${gcp_cluster_name} --region ${gcp_zone}
 fi
 
 # Create Kubernetes secret with the GOOGLE_CREDENTIALS for GCP Auto-Unseal.
