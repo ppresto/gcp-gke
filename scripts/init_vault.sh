@@ -3,21 +3,21 @@
 # Vars
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 PWD=$(echo $PWD)
+timeout=420
+vRunning=""
+config="$HOME/.kube/config"
 
+# Set this to one of your pod names.
+init_inst="vault-primary-0"
+
+# GITDIR should be the working directory with your terraform.tfstate file.
 if [[ ! -z $1 ]]; then
     GITDIR="${1}"
 else
     GITDIR=${PWD}
 fi
 
-timeout=420
-vRunning=""
 
-if [[ ! -z $1 ]]; then
-  config="$1"
-else
-  config="$HOME/.kube/config"
-fi
 
 # K8s namespace is needed to lookup vault information
 if [[ $(terraform output -state=${GITDIR}/terraform.tfstate gke_namespace) ]]; then
@@ -35,8 +35,6 @@ fi
 # Find Active Vault Node
 if [[ $(kubectl --kubeconfig ${config} --namespace ${ns} get pod --selector="vault-active=true" --output=jsonpath={.items..metadata.name}) ]]; then
     init_inst=$(kubectl --kubeconfig ${config} --namespace ${ns} get pod --selector="vault-active=true" --output=jsonpath={.items..metadata.name})
-else
-    init_inst="vault-0"
 fi
 
 # Initialize Vault
