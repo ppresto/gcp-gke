@@ -9,7 +9,7 @@ config="$HOME/.kube/config"
 
 # Set this to one of your pod names.
 if [[ $(helm list -o json | jq -r '.[].name' | grep vault) ]]; then
-    init_inst="$(helm list -o json | jq -r '.[].name' | grep vault)"
+    init_inst="$(helm list -o json | jq -r '.[].name' | grep vault)-0"
 else
     init_inst="vault-0"
 fi
@@ -43,7 +43,7 @@ fi
 
 # Initialize Vault
 
-if [[ ! $(helm status --kubeconfig ${config} --namespace ${ns} vault) ]]; then
+if [[ ! $(helm status --kubeconfig ${config} --namespace ${ns} ${init_inst%-*}) ]]; then
     echo "helm release status "
     exit 1
 fi
