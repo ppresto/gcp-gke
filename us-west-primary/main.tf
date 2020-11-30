@@ -21,6 +21,7 @@ module "gcp-gke-kms" {
 data "template_file" "init" {
   template = file("../${path.module}/templates/override-values-autounseal.yaml")
   vars = {
+    prefix      = var.prefix
     project     = var.gcp_project
     region      = "global"
     key_ring    = "${var.gcp_region}-${var.key_ring}"
