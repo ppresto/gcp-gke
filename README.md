@@ -36,6 +36,54 @@ kubectl config rename-context
 
 ## DR Replication
 
+Get Status on primary or DR
+```
+vault read sys/replication/performance/status
+```
+
+### DR Replication with Wrapped Token
+```
+vault write sys/replication/dr/primary/secondary-token id=EU-2 | tee /root/config-files/vault/wrapping_token.txt
+
+vault read sys/replication/dr/status
+
+scp -o StrictHostKeyChecking=no vault-eu-1:/root/config-files/vault/wrapping_token.txt /root/config-files/vault/wrapping_token.txt
+wrapping_token=$(cat /root/config-files/vault/wrapping_token.txt | grep wrapping_token: | cut -d' ' -f19)
+```
+### DR Replication with public key
+```
+# na1
+vault write -f sys/replication/dr/primary/enable
+
+# na2
+vault write -f sys/replication/dr/secondary/generate-public-key
+
+# na1
+vault write sys/replication/dr/primary/secondary-token id=NA-2 secondary_public_key=<your_spk> | tee /root/config-files/vault/sec_token.txt
+vault read sys/replication/dr/status
+
+# na2
+scp -o StrictHostKeyChecking=no vault-na-1:/root/config-files/vault/sec_token.txt /root/config-files/vault/sec_token.txt
+sec_token=$(cat /root/config-files/vault/sec_token.txt | grep token | cut -d' ' -f5)
+
+vault write sys/replication/dr/secondary/enable ca_file=/etc/consul.d/tls/consul-agent-ca.pem token=$sec_token
+
+# na1 - revoke to restart if needed
+vault write sys/replication/dr/primary/revoke-secondary id=NA-2
+```
+
+
+Secondary Perf Rep - Get new root token after replication working.
+FYI:  License can be reset after performance secondary setup.  Reapply. 
+```
+vault operator generate-root -generate-otp
+vault operator generate-root -init -otp=<your_otp>
+
+# Run 2x, use recover keys from Primary, get encoded token
+vault operator generate-root   
+vault operator generate-root -decode=<token> -otp=<otp>
+export VAULT_TOKEN=<dr-root-key>
+```
 ### dcanadillas (resolver_discover_servers)
 https://gist.github.com/dcanadillas/8448a3ba6652f8fe120c011f1825555e
 ### GKE + VM replication Architecture
