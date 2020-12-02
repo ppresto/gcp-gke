@@ -84,6 +84,19 @@ vault operator generate-root
 vault operator generate-root -decode=<token> -otp=<otp>
 export VAULT_TOKEN=<dr-root-key>
 ```
+### Kubernetes
+https://learn.hashicorp.com/tutorials/vault/kubernetes-raft-deployment-guide#load-balancers-and-replication
+https://www.vaultproject.io/docs/platform/k8s/helm/examples/enterprise-dr-with-raft
+
+### Hashicorp Vault Replication Links
+https://www.vaultproject.io/docs/enterprise/replication
+https://learn.hashicorp.com/tutorials/vault/disaster-recovery#enable-dr-secondary-replication
+https://www.vaultproject.io/docs/concepts/ha#behind-load-balancers
+https://www.vaultproject.io/api-docs/system/health
+https://www.vaultproject.io/api-docs/system/replication/replication-dr#primary_api_addr
+https://www.vaultproject.io/api/system/replication.html
+https://learn.hashicorp.com/tutorials/vault/monitor-replication#port-traffic-consideration-with-load-balancer
+
 ### dcanadillas (resolver_discover_servers)
 https://gist.github.com/dcanadillas/8448a3ba6652f8fe120c011f1825555e
 ### GKE + VM replication Architecture

@@ -124,11 +124,17 @@ installLicense () {
     VAULT_ROOT_TOKEN=$(cat ${GITDIR}/tmp/cluster-keys.json | jq -r ".root_token")
     echo $?
     if [[ -z $VAULT_ROOT_TOKEN ]]; then
+        echo "Failed to get root token for login"
+        exit
+    fi
+
+    kubectl exec --kubeconfig ${config} --namespace ${ns} -ti ${init_inst} -- vault login ${VAULT_ROOT_TOKEN} -format="json" | tee ${GITDIR}/tmp/vault-active-token.json
+    VAULT_TOKEN=$(jq -r '.auth.client_token' < ${GITDIR}/tmp/vault-active-token.json)
+    if [[ -z $VAULT_TOKEN ]]; then
         echo "Failed to get login token"
         exit
     fi
-    VAULT_TOKEN=$(kubectl exec --kubeconfig ${config} --namespace ${ns} -ti ${init_inst} -- vault login ${VAULT_ROOT_TOKEN} -format="json" | jq -r ".auth.client_token")
-    
+    echo "${VAULT_TOKEN} >> ${GITDIR}/tmp/vault-active-token.json
     
     echo -e "\nSetting up port-forward to ${init_inst}"
     kubectl port-forward --kubeconfig ${config} --namespace ${ns} ${init_inst} 8200:8200 &
