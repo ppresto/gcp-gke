@@ -134,7 +134,6 @@ installLicense () {
         echo "Failed to get login token"
         exit
     fi
-    echo "${VAULT_TOKEN} >> ${GITDIR}/tmp/vault-active-token.json
     
     echo -e "\nSetting up port-forward to ${init_inst}"
     kubectl port-forward --kubeconfig ${config} --namespace ${ns} ${init_inst} 8200:8200 &
