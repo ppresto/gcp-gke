@@ -44,16 +44,6 @@ server:
   #    memory: 16Gi
   #    cpu: 2000m
 
-  # For HA configuration and because we need to manually init the vault,
-  # we need to define custom readiness/liveness Probe settings
-  readinessProbe:
-    enabled: true
-    path: '/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204'
-  livenessProbe:
-    enabled: true
-    path: '/v1/sys/health?standbyok=true&perfstandbyok=true'
-    initialDelaySeconds: 60
-
   # extraEnvironmentVars is a list of extra enviroment variables to set with the stateful set. These could be
   # used to include variables required for auto-unseal.
   #extraEnvironmentVars:

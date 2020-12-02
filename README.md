@@ -50,11 +50,28 @@ vault read sys/replication/dr/status
 scp -o StrictHostKeyChecking=no vault-eu-1:/root/config-files/vault/wrapping_token.txt /root/config-files/vault/wrapping_token.txt
 wrapping_token=$(cat /root/config-files/vault/wrapping_token.txt | grep wrapping_token: | cut -d' ' -f19)
 ```
+### DR Replication
+```
+# eu1
+vault write -f sys/replication/dr/primary/enable
+vault write sys/replication/dr/primary/secondary-token id=EU-2 | tee /root/config-files/vault/wrapping_token.txt
+
+# eu2
+#To avoid issues with newlines in the wrapping token, let's copy it from the EU-1 server to the EU-2 #server and put it in an environment variable by running these commands on the "EU-2" server:
+
+scp -o StrictHostKeyChecking=no vault-eu-1:/root/config-files/vault/wrapping_token.txt /root/config-files/vault/wrapping_token.txt
+
+wrapping_token=$(cat /root/config-files/vault/wrapping_token.txt | grep wrapping_token: | cut -d' ' -f19)
+
+vault write sys/replication/dr/secondary/enable ca_file=/etc/consul.d/tls/consul-agent-ca.pem token=$wrapping_token
+
+vault read sys/replication/dr/status
+```
+
 ### DR Replication with public key
 ```
 # na1
 vault write -f sys/replication/dr/primary/enable
-
 # na2
 vault write -f sys/replication/dr/secondary/generate-public-key
 
