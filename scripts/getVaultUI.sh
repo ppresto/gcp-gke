@@ -21,6 +21,11 @@ while [ -z $external_ip ]; do
   external_ip=$(kubectl get svc $1 --template="{{range .status.loadBalancer.ingress}}{{.ip}}{{end}}")
   [ -z "$external_ip" ] && sleep 10
 done
+
+export VAULT_ADDR="http://${external_ip}:8200/ui"
+export VAULT_ROOT_TOKEN="${token}"
+
 echo
 echo "http://${external_ip}:8200/ui"
-echo "Login Token=${token}"
+echo "Login Token:"
+echo "${token}"

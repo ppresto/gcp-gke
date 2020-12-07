@@ -3,6 +3,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 if [[ ! -d ${DIR}/tmp ]]; then
   mkdir -p ${DIR}/tmp
+  echo ${GOOGLE_CREDENTIALS} > ${DIR}/tmp/credential_key.json
 fi
 # Using zone for the region in tf makes smaller GKS footprint
 client_email=$(jq -r '.client_email' < tmp/credential_key.json) || echo ${GOOGLE_CREDENTIALS} > ${DIR}/tmp/credential_key.json
