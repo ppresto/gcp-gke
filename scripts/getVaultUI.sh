@@ -17,15 +17,17 @@ fi
 # Wait for External IP to be available
 external_ip=""
 while [ -z $external_ip ]; do
-  echo "Waiting for end point..."
+  echo "Waiting for Vault External URL ..."
   external_ip=$(kubectl get svc $1 --template="{{range .status.loadBalancer.ingress}}{{.ip}}{{end}}")
   [ -z "$external_ip" ] && sleep 10
 done
 
-export VAULT_ADDR="http://${external_ip}:8200/ui"
-export VAULT_ROOT_TOKEN="${token}"
+export VAULT_ADDR="http://${external_ip}:8200"
+export VAULT_TOKEN="${token}"
+export VAULT_SKIP_VERIFY=true
 
 echo
 echo "http://${external_ip}:8200/ui"
+echo
 echo "Login Token:"
 echo "${token}"

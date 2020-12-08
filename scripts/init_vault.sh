@@ -70,7 +70,7 @@ initializeVault () {
     #isInitialized=$(kubectl get pods -o json  | jq -r '.items[] | select(.status.phase == "Running" and select(.metadata.labels."vault-initialized" == "true" )) | .metadata.name')
     #if [[ $(echo $isInitialized | grep "${init_inst}" | grep -v grep) ]]; then
     if [[ $(echo $vaultInitStatus | awk '{ print $NF }' | grep false) ]]; then
-        echo "\nInitializing Vault...  (Inititialized Status: $vaultInitStatus)"
+        echo -e "\nInitializing Vault...  (Vault Init Status: $vaultInitStatus)"
         echo
         kubectl exec --kubeconfig ${config} --namespace ${ns} ${init_inst} -- vault operator init -key-shares=1 -key-threshold=1 -format=json > ${GITDIR}/tmp/cluster-keys.json
         sleep 5
