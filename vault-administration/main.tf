@@ -1,5 +1,17 @@
-provider "vault" {
-  version = "~> 2.0.0"
+terraform {
+  required_providers {
+    # In the rare situation of using two providers that
+    # have the same type name -- "http" in this example --
+    # use a compound local name to distinguish them.
+    vault = {
+      source  = "hashicorp/vault"
+      version = "~> 2.0.0"
+    }
+    null = {
+      source = "hashicorp/null"
+      version = "= 3.0.0"
+    }
+  }
 }
 
 module "policy" {
