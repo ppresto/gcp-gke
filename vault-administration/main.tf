@@ -5,7 +5,7 @@ terraform {
     # use a compound local name to distinguish them.
     vault = {
       source  = "hashicorp/vault"
-      version = "~> 2.0.0"
+      version = "= 2.16.0"
     }
     null = {
       source = "hashicorp/null"
