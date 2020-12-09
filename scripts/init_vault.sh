@@ -69,22 +69,25 @@ initializeVault () {
     vaultInitStatus=$(kubectl --kubeconfig ${config} --namespace ${ns} exec -it ${init_inst} -- vault status | grep Initialized)
     #isInitialized=$(kubectl get pods -o json  | jq -r '.items[] | select(.status.phase == "Running" and select(.metadata.labels."vault-initialized" == "true" )) | .metadata.name')
     #if [[ $(echo $isInitialized | grep "${init_inst}" | grep -v grep) ]]; then
+    echo
     if [[ $(echo $vaultInitStatus | awk '{ print $NF }' | grep false) ]]; then
-        echo "Status: $vaultInitStatus"
+        echo "Vault Status: $vaultInitStatus"
         echo "Initializing Vault..."
         echo
         kubectl exec --kubeconfig ${config} --namespace ${ns} ${init_inst} -- vault operator init -key-shares=1 -key-threshold=1 -format=json > ${GITDIR}/tmp/cluster-keys.json
         sleep 5
         export VAULT_ROOT_TOKEN=$(cat ${GITDIR}/tmp/cluster-keys.json | jq -r ".root_token")
     else
-        echo "\nVault Initialized : Skipping..."
+        echo "Vault Initialized : Skipping..."
+        echo
     fi
     kubectl exec --kubeconfig ${config} --namespace ${ns} -it ${init_inst} -- vault status
     echo
 }
 
 joinRaftPeers() {
-    echo "\nChecking for Raft Peers ..."
+    echo
+    echo "Checking for Raft Peers ..."
     podList=$(kubectl --kubeconfig ${config} --namespace ${ns} get pods -o json  | jq -r '.items[] | select(.metadata.labels.component == "server")|.metadata.name')
     podsNotReady=$(kubectl --kubeconfig ${config} --namespace ${ns} get pods -o json  | jq -r '.items[] | select(.status.phase == "Running" and ([ .status.containerStatuses[] | select(.ready == false )] | length ) == 1 ) | .metadata.namespace + "/" + .metadata.name')
     peersNotInit=$(kubectl --kubeconfig ${config} --namespace ${ns} get pods -o json  | jq -r '.items[] | select(.status.phase == "Running" and select(.metadata.labels."vault-initialized" == "false" )) | .metadata.name')
@@ -93,10 +96,11 @@ joinRaftPeers() {
     for peer in $podList
     do
         # If pod status is 1/1 Ready
+        echo
         echo "Checking Peer: $peer"
         # If vault status shows instance Initialzed = "false"
         if [[ $(kubectl exec -it ${peer} -- vault status | grep "Initialized" | grep "false" | wc -l) -gt 0 ]]; then
-            echo "\nJoining Peer: ${peer} to http://${init_inst}.${init_inst%-*}-internal:8200"
+            echo "Joining Peer: ${peer} to http://${init_inst}.${init_inst%-*}-internal:8200"
             echo "kubectl exec --kubeconfig ${config} --namespace ${ns} -ti ${peer} -- vault operator raft join http://${init_inst}.${init_inst%-*}-internal:8200"
             sleep 5
             kubectl exec --kubeconfig ${config} --namespace ${ns} -ti ${peer} -- vault operator raft join http://${init_inst}.${init_inst%-*}-internal:8200
