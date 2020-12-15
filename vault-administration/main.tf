@@ -26,3 +26,9 @@ module "kv" {
   kv_secret_path = "kv/mysecrets"
   kv_secret_data = "{\"username\": \"admin\", \"password\": \"notsosecure\", \"ttl\": \"30m\"}"
 }
+
+module "userpass" {
+  source         = "../modules/vault-userpass"
+  username       = "admin"
+  password       = "password"
+}
