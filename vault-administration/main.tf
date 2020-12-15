@@ -17,8 +17,8 @@ terraform {
 locals {
   resources = {
     # policy_name = "<filename>"
-    vault-dr-token = "${path.module}/policies/vault-dr-token-policy.hcl"
-    superuser = "${path.module}/policies/superuser-policy.hcl"
+    vault-dr-token = "vault-dr-token-policy.hcl"
+    superuser = "superuser-policy.hcl"
   }
 }
 
@@ -27,7 +27,7 @@ module "policy" {
   for_each = local.resources
 
    policy_name = each.key
-   policy_code = file(each.value)
+   policy_code = file("${path.module}/policies/${each.value}")
 }
 
 #module "policy" {
