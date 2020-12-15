@@ -14,30 +14,20 @@ terraform {
   }
 }
 
-variable "policies" {
-  type = map(object({
-    name            = string
-    file            = any
-  }))
-}
-
-policies = {
-  dr = {
-    name = "vault-dr-token"
-    file = file("${path.module}/policies/vault-dr-token-policy.hcl")
-  },
-  superuser = {
-    name = "superuser"
-    file = file("${path.module}/policies/superuser.hcl")
+locals {
+  resources = {
+    # policy_name = "<filename>"
+    vault-dr-token = "vault-dr-token-policy.hcl"
+    superuser = "superuser.hcl"
   }
 }
 
 module "policy" {
   source = "../modules/vault-policy"
-  for_each = var.policies
+  for_each = local.resources
 
-   policy_name = each.value.name
-   policy_code = each.value.file
+   policy_name = each.key
+   policy_code = file("${path.module}/policies/${each.value}")
 }
 
 #module "policy" {
