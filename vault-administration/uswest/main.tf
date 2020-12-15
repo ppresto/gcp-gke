@@ -25,7 +25,7 @@ locals {
 }
 
 module "policy" {
-  source = "../modules/vault-policy"
+  source = "../../modules/vault-policy"
   for_each = local.policies
 
    policy_name = each.key
@@ -39,20 +39,20 @@ module "policy" {
 #}
 
 module "kv" {
-  source         = "../modules/vault-kv"
+  source         = "../../modules/vault-kv"
   kv_path        = "kv"
   kv_secret_path = "kv/mysecrets"
   kv_secret_data = "{\"username\": \"admin\", \"password\": \"notsosecure\", \"ttl\": \"30m\"}"
 }
 
 module "userpass" {
-  source         = "../modules/vault-userpass"
+  source         = "../../modules/vault-userpass"
   username       = "admin"
   password       = "admin"
 }
 
 module "k8s" {
-  source             = "../modules/vault-k8s"
+  source             = "../../modules/vault-k8s"
   kubernetes_host    = var.kubernetes_host
   kubernetes_ca_cert = var.kubernetes_ca_cert
   token_reviewer_jwt = var.token_reviewer_jwt

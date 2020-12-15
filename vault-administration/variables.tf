@@ -1,8 +1,3 @@
-# Namespace where to onboard our Application
-variable "namespace" {
-  description = "namespace where all work will happen"
-  default     = "us-west"
-}
 # Kubernetes
 variable "kubernetes_host" {
   description = "Kubernetes API endpoint"

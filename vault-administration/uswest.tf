@@ -1,10 +1,10 @@
 module "ns_uswest" {
-  source    = "./modules/namespace"
+  source    = "../modules/vault-namespace"
   namespace = "uswest"
 }
 
 module "approle_uswest" {
-  source                    = "./modules/vault-approle"
+  source                    = "../modules/vault-approle"
   role_depends_on           = module.ns_uswest.id
   namespace                 = "uswest"
   approle_path              = var.approle_path
