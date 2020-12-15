@@ -15,16 +15,17 @@ terraform {
 }
 
 locals {
-  resources = {
+  policies = {
     # policy_name = "<filename>"
     vault-dr-token = "vault-dr-token-policy.hcl"
     superuser = "superuser-policy.hcl"
+    k8s = "k8s-policy.hcl"
   }
 }
 
 module "policy" {
   source = "../modules/vault-policy"
-  for_each = local.resources
+  for_each = local.policies
 
    policy_name = each.key
    policy_code = file("${path.module}/policies/${each.value}")
@@ -46,5 +47,13 @@ module "kv" {
 module "userpass" {
   source         = "../modules/vault-userpass"
   username       = "admin"
-  password       = "password"
+  password       = "admin"
+}
+
+module "k8s" {
+  source             = "../modules/k8s"
+  kubernetes_host    = var.kubernetes_host
+  kubernetes_ca_cert = var.kubernetes_ca_cert
+  token_reviewer_jwt = var.token_reviewer_jwt
+  policy_name        = "k8s"
 }
