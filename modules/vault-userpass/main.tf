@@ -16,7 +16,7 @@ EOT
 }
 
 resource "vault_generic_endpoint" "u1_token" {
-  depends_on     = ["vault_generic_endpoint.u1"]
+  depends_on     = [vault_generic_endpoint.u1]
   path           = "auth/userpass/login/${var.username}"
   disable_read   = true
   disable_delete = true
@@ -29,7 +29,7 @@ EOT
 }
 
 resource "vault_generic_endpoint" "u1_entity" {
-  depends_on           = ["vault_generic_endpoint.u1_token"]
+  depends_on           = [vault_generic_endpoint.u1_token]
   disable_read         = true
   disable_delete       = true
   path                 = "identity/lookup/entity"
