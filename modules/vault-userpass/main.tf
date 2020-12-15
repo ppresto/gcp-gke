@@ -45,5 +45,5 @@ EOT
 }
 
 output "u1_id" {
-  value = "${vault_generic_endpoint.u1_entity.write_data["id"]}"
+  value = vault_generic_endpoint.u1_entity.write_data["id"]
 }
