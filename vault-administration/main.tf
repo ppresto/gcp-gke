@@ -14,11 +14,37 @@ terraform {
   }
 }
 
-module "policy" {
-  source      = "../modules/vault-policy"
-  policy_name = "vault-dr-token"
-  policy_code = file("${path.module}/policies/vault-dr-token-policy.hcl")
+variable "policies" {
+  type = map(object({
+    name            = string
+    file            = any
+  }))
 }
+
+policies = {
+  dr = {
+    name = "vault-dr-token"
+    file = file("${path.module}/policies/vault-dr-token-policy.hcl")
+  },
+  superuser = {
+    name = "superuser"
+    file = file("${path.module}/policies/superuser.hcl")
+  }
+}
+
+module "policy" {
+  source = "../modules/vault-policy"
+  for_each = var.policies
+
+   policy_name = each.value.name
+   policy_code = each.value.file
+}
+
+#module "policy" {
+##  source      = "../modules/vault-policy"
+#  policy_name = "vault-dr-token"
+#  policy_code = file("${path.module}/policies/vault-dr-token-policy.hcl")
+#}
 
 module "kv" {
   source         = "../modules/vault-kv"
