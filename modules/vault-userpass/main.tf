@@ -3,7 +3,7 @@ resource "vault_auth_backend" "userpass" {
 }
 
 resource "vault_generic_endpoint" "u1" {
-  depends_on           = ["vault_auth_backend.userpass"]
+  depends_on           = [vault_auth_backend.userpass]
   path                 = "auth/userpass/users/${var.username}"
   ignore_absent_fields = true
 

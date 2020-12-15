@@ -56,4 +56,5 @@ module "k8s" {
   kubernetes_ca_cert = var.kubernetes_ca_cert
   token_reviewer_jwt = var.token_reviewer_jwt
   policy_name        = "k8s"
+  k8s_path           = "k8s"
 }
