@@ -1,6 +1,6 @@
 #!/bin/bash
 VAULT_NAMESPACE="uswest"
-SERVICE="vault-primary-ui"
+SERVICE=$(kubectl get svc -o json | jq -r '.items[].metadata | select(.name | contains("ui")) | .name')
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 # Get Root Token

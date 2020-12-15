@@ -17,10 +17,8 @@ terraform {
 locals {
   policies = {
     # policy_name = "<filename>"
-    vault-dr-token = "vault-dr-token-policy.hcl"
-    superuser = "superuser-policy.hcl"
     k8s = "k8s-policy.hcl"
-    terraform = "terraform.hcl"
+    #terraform = "terraform.hcl"
   }
 }
 

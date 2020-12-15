@@ -6,7 +6,7 @@ provider "vault" {
 }
 
 resource "vault_auth_backend" "approle" {
-  depends_on = [module.policy]
+  depends_on = [vault_policy.terraform]
   type = "approle"
   path = var.approle_path
   description = "AppRole managed by Terraform"
@@ -17,7 +17,7 @@ resource "vault_auth_backend" "approle" {
 }
 
 resource "vault_approle_auth_backend_role" "terraform" {
-  depends_on = [module.policy]
+  depends_on = [vault_policy.terraform]
   backend        = vault_auth_backend.approle.path
   role_name      = var.role_name
   token_policies = var.policies
