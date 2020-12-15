@@ -57,15 +57,3 @@ module "k8s" {
   policy_name        = "k8s"
   k8s_path           = var.k8s_path
 }
-
-#module "gcp" {
-#  source = "../modules/gcp"
-
-#  gcp_credentials = var.gcp_credentials
-#  gcp_role_name   = var.gcp_role_name
-#  gcp_bound_zones     = var.gcp_bound_zones
-#  gcp_bound_projects  = var.gcp_bound_projects
-#  gcp_token_policies  = var.gcp_token_policies
-#  gcp_token_ttl       = var.gcp_token_ttl
-#  gcp_token_max_ttl   = var.gcp_token_max_ttl
-#}

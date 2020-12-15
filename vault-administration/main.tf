@@ -19,8 +19,6 @@ locals {
     # policy_name = "<filename>"
     vault-dr-token = "vault-dr-token-policy.hcl"
     superuser = "superuser-policy.hcl"
-    k8s = "k8s-policy.hcl"
-    terraform = "terraform.hcl"
   }
 }
 
@@ -32,30 +30,16 @@ module "policy" {
    policy_code = file("${path.module}/policies/${each.value}")
 }
 
-#module "policy" {
-##  source      = "../modules/vault-policy"
-#  policy_name = "vault-dr-token"
-#  policy_code = file("${path.module}/policies/vault-dr-token-policy.hcl")
-#}
 
 module "kv" {
-  source         = "../modules/vault-kv"
+  source         = "../../modules/vault-kv"
   kv_path        = "kv"
   kv_secret_path = "kv/mysecrets"
   kv_secret_data = "{\"username\": \"admin\", \"password\": \"notsosecure\", \"ttl\": \"30m\"}"
 }
 
 module "userpass" {
-  source         = "../modules/vault-userpass"
-  username       = "admin"
-  password       = "admin"
-}
-
-module "k8s" {
-  source             = "../modules/vault-k8s"
-  kubernetes_host    = var.kubernetes_host
-  kubernetes_ca_cert = var.kubernetes_ca_cert
-  token_reviewer_jwt = var.token_reviewer_jwt
-  policy_name        = "k8s"
-  k8s_path           = "k8s"
+  source         = "../../modules/vault-userpass"
+  username       = "root"
+  password       = "root"
 }

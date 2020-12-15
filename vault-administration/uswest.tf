@@ -17,22 +17,6 @@ module "approle_uswest" {
   policies                  = ["default", "terraform"]
 }
 
-locals {
-  policies = {
-    # policy_name = "<filename>"
-    vault-dr-token = "vault-dr-token-policy.hcl"
-    superuser = "superuser-policy.hcl"
-  }
-}
-
-module "policy" {
-  source = "../modules/vault-policy"
-  for_each = local.policies
-
-   policy_name = each.key
-   policy_code = file("${path.module}/policies/${each.value}")
-}
-
 output "role_id_uswest" {
   value = module.approle_uswest.role_id
 }
