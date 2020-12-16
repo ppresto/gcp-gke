@@ -56,13 +56,13 @@ EOF
 # Install Consul with the Helm Chart
 ###########
 helm repo add hashicorp https://helm.releases.hashicorp.com
-helm install -f /root/consul-values.yaml hashicorp hashicorp/consul
+helm install -f ${DIR}/../tmp/hashicups/uscentral-values.yaml uscentral hashicorp/consul
 
 # Wait for consul server pod to be ready
 status=""
 while [ -z "${status}" ]; do
   sleep 3
-  status=$(kubectl get pods | grep "hashicorp-consul-server.*1/1")
+  status=$(kubectl get pods | grep "uscentral-consul-server.*1/1")
 done
 
 ###########
@@ -170,6 +170,9 @@ spec:
         consul.hashicorp.com/connect-inject: "true"
         consul.hashicorp.com/connect-service-upstreams: "postgres:5432"
         vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-status: "update"
+        vault.hashicorp.com/namespace: "uscentral"
+        vault.hashicorp.com/auth-path: "auth/k8s"
         vault.hashicorp.com/agent-inject-secret-db-creds: "kv/db/postgres/product-db-creds"
         vault.hashicorp.com/agent-inject-template-db-creds: |
           {
