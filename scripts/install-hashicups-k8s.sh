@@ -61,12 +61,12 @@ done
 ###########
 # Create a directory for the k8s .yaml files
 ###########
-mkdir ${DIR}/tmp
+mkdir ${DIR}/../tmp/hashicups
 
 ###########
 # Set up Postgres Products DB Kubernetes Deployment
 ###########
-cat <<-EOF > ${DIR}/tmp/products-db.yml
+cat <<-EOF > ${DIR}/../tmp/hashicups/products-db.yml
 ---
 apiVersion: v1
 kind: Service
@@ -124,7 +124,7 @@ EOF
 ###########
 # Set up Products API Kubernetes Deployment
 ###########
-cat <<-EOF > ${DIR}/tmp/products-api.yml
+cat <<-EOF > ${DIR}/../tmp/hashicups/products-api.yml
 ---
 # Service to expose web frontend
 apiVersion: v1
@@ -212,7 +212,7 @@ EOF
 ###########
 # Set up Public API Kubernetes Deployment
 ###########
-cat <<-EOF > ${DIR}/tmp/public-api.yml
+cat <<-EOF > ${DIR}/../tmp/hashicups/public-api.yml
 ---
 apiVersion: v1
 kind: Service
@@ -280,7 +280,7 @@ EOF
 # Set up Frontend Kubernetes Deployment
 ###########
 
-cat <<-EOF > ${DIR}/tmp/frontend.yml
+cat <<-EOF > ${DIR}/../tmp/hashicups/frontend.yml
 ---
 apiVersion: v1
 kind: Service
@@ -368,7 +368,7 @@ EOF
 ###########
 # Set up Products API Service Account
 ###########
-cat <<-EOF > ${DIR}/tmp/products-api-service-account.yml
+cat <<-EOF > ${DIR}/../tmp/hashicups/products-api-service-account.yml
 # Service account to allow pod access to Vault via K8s auth
 apiVersion: v1
 kind: ServiceAccount
@@ -377,6 +377,6 @@ metadata:
 automountServiceAccountToken: true
 EOF
 
-kubectl apply -f ${DIR}/tmp/products-api-service-account.yml
+kubectl apply -f ${DIR}/../tmp/hashicups/products-api-service-account.yml
 
 exit 0
