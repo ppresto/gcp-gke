@@ -22,26 +22,33 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 ###########
 # Configure Consul Helm Chart values
 ###########
-cat <<-EOF > /root/consul-values.yaml
+cat <<-EOF > ${DIR}/../tmp/hashicups/uscentral-values.yaml
 global:
-  datacenter: dc1
-  image: "consul:1.8.2"
-  imageK8S: "hashicorp/consul-k8s:0.18.1"
+  datacenter: uscentral
+  #image: "consul:1.8.2"
+  #imageK8S: "hashicorp/consul-k8s:0.18.1"
+
+ui:
+  enabled: true
+  service:
+    type: 'LoadBalancer'
+
 server:
   replicas: 1
   bootstrapExpect: 1
+
 client:
   enabled: true
   grpc: true
-ui:
-  enabled: true
+
 connectInject:
   enabled: true
+
 syncCatalog:
   enabled: true
-  toConsul: true
-  toK8S: false
-  default: true
+  #toConsul: true
+  #toK8S: false
+  #default: true
 EOF
 
 
