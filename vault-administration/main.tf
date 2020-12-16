@@ -33,8 +33,8 @@ module "policy" {
 
 module "kv" {
   source         = "../modules/vault-kv"
-  kv_path        = "kv"
-  kv_secret_path = "kv/mysecrets"
+  kv_path        = "root"
+  kv_secret_path = "root/secrets"
   kv_secret_data = "{\"username\": \"admin\", \"password\": \"notsosecure\", \"ttl\": \"30m\"}"
 }
 

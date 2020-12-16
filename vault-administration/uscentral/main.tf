@@ -18,7 +18,7 @@ locals {
   policies = {
     # policy_name = "<filename>"
     k8s = "k8s-policy.hcl"
-    #terraform = "terraform.hcl"
+    products-api = "products-api-policy.hcl"
   }
 }
 
@@ -39,8 +39,8 @@ module "policy" {
 module "kv" {
   source         = "../../modules/vault-kv"
   kv_path        = "kv"
-  kv_secret_path = "kv/uscentral"
-  kv_secret_data = "{\"username\": \"admin\", \"password\": \"notsosecure\", \"ttl\": \"30m\"}"
+  kv_secret_path = "kv/db/postgres/product-db-creds"
+  kv_secret_data = "{\"username\": \"postgres\", \"password\": \"password\"}"
 }
 
 module "userpass" {

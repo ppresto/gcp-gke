@@ -6,9 +6,9 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 # Get Root Token
 context=$(kubectl config current-context)
 if [[ $context == "primary" ]]; then
-    token=$(cat /root/gcp-gke/us-west-primary/tmp/cluster-keys.json | jq -r ".root_token")
+    token=$(cat /root/gcp-gke/us-west/tmp/cluster-keys.json | jq -r ".root_token")
 else
-    token=$(cat /root/gcp-gke/us-central-dr/tmp/cluster-keys.json | jq -r ".root_token")
+    token=$(cat /root/gcp-gke/us-central/tmp/cluster-keys.json | jq -r ".root_token")
 fi
 
 # Wait for External IP to be available
