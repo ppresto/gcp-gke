@@ -56,4 +56,5 @@ module "k8s" {
   token_reviewer_jwt = var.token_reviewer_jwt
   policy_name        = "k8s"
   k8s_path           = var.k8s_path
+  kubernetes_sa      = "products-api"
 }
