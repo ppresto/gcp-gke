@@ -30,6 +30,11 @@ variable "token_reviewer_jwt" {
 variable "k8s_path" {
   description = "Kubernetes Auth method path"
 }
+
+variable "k8s_role" {
+  description = "Kubernetes Vault Auth role name"
+  default = "k8s"
+}
 # Kubernetes Policy
 variable "policy_name" {
   description = "Name of the policy to be created"

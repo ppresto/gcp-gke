@@ -1,6 +1,11 @@
 #!/bin/sh
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+echo $DIR
+###########
+# Create a directory for the k8s .yaml files
+###########
+mkdir -p ${DIR}/../tmp/hashicups
 
 ###########
 # Install Postgres client for testing
@@ -22,7 +27,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 ###########
 # Configure Consul Helm Chart values
 ###########
-cat <<-EOF > ${DIR}/../tmp/hashicups/uscentral-values.yaml
+cat <<-EOF > ${DIR}/../tmp/us-central-values.yaml
 global:
   datacenter: uscentral
   #image: "consul:1.8.2"
@@ -56,7 +61,7 @@ EOF
 # Install Consul with the Helm Chart
 ###########
 helm repo add hashicorp https://helm.releases.hashicorp.com
-helm install -f ${DIR}/../tmp/hashicups/uscentral-values.yaml uscentral hashicorp/consul
+helm install -f ${DIR}/../tmp/us-central-values.yaml us-central hashicorp/consul
 
 # Wait for consul server pod to be ready
 status=""
@@ -64,11 +69,6 @@ while [ -z "${status}" ]; do
   sleep 3
   status=$(kubectl get pods | grep "uscentral-consul-server.*1/1")
 done
-
-###########
-# Create a directory for the k8s .yaml files
-###########
-mkdir ${DIR}/../tmp/hashicups
 
 ###########
 # Set up Postgres Products DB Kubernetes Deployment

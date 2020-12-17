@@ -1,21 +1,18 @@
 #!/bin/bash
+#!/bin/bash
 VAULT_NAMESPACE="uscentral"
-SERVICE=$(kubectl get svc -o json | jq -r '.items[].metadata | select(.name | contains("ui")) | .name')
+SERVICE=$(kubectl --context=dr get svc -o json | jq -r '.items[].metadata | select(.name | contains("ui")) | .name')
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 # Get Root Token
 context=$(kubectl config current-context)
-if [[ $context == "primary" ]]; then
-    token=$(cat /root/gcp-gke/us-west/tmp/cluster-keys.json | jq -r ".root_token")
-else
-    token=$(cat /root/gcp-gke/us-central/tmp/cluster-keys.json | jq -r ".root_token")
-fi
+token=$(cat /root/gcp-gke/us-west/tmp/root.token.primary.json)
 
 # Wait for External IP to be available
 external_ip=""
 while [ -z $external_ip ]; do
   echo "Waiting for Vault External URL ..."
-  external_ip=$(kubectl get svc $SERVICE --template="{{range .status.loadBalancer.ingress}}{{.ip}}{{end}}")
+  external_ip=$(kubectl --context=dr get svc $SERVICE --template="{{range .status.loadBalancer.ingress}}{{.ip}}{{end}}")
   [ -z "$external_ip" ] && sleep 10
 done
 
