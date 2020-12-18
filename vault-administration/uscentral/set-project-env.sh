@@ -1,14 +1,14 @@
 #!/bin/bash
-VAULT_NAMESPACE="uscentral"
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+VAULT_NAMESPACE="uscentral"
+kubectl config use-context dr
 
 # Get Root Token
-context=$(kubectl config current-context)
 token=$(cat /root/gcp-gke/us-west/tmp/root.token.primary.json)
 
 # Get Vault Address.  Wait for External IP to be available
-SERVICE=$(kubectl --context=dr get svc -o json | jq -r '.items[].metadata | select(.name | contains("ui")) | .name')
-external_ip=$(kubectl --context=dr get svc $SERVICE --template="{{range .status.loadBalancer.ingress}}{{.ip}}{{end}}")
+SERVICE=$(kubectl get svc -o json | jq -r '.items[].metadata | select(.name | contains("ui")) | .name')
+external_ip=$(kubectl get svc $SERVICE --template="{{range .status.loadBalancer.ingress}}{{.ip}}{{end}}")
 
 export VAULT_ADDR="http://${external_ip}:8200"
 export VAULT_TOKEN="${token}"
@@ -27,7 +27,7 @@ if [[ $(terraform output -state=../terraform.tfstate role_id_${VAULT_NAMESPACE})
 
   # Kubernetes
   export TF_VAR_k8s_path=$(terraform output -state=../terraform.tfstate k8s_path_${VAULT_NAMESPACE})
-  export TF_VAR_kubernetes_host=$(kubectl config view -o yaml | grep server | awk '{ print $NF }')
+  export TF_VAR_kubernetes_host=$(kubectl cluster-info | grep -i kubernetes | awk '{ print $NF }')
   export VAULT_DEPLOYMENT=$(helm list -o json | jq -r '.[].name')
   export VAULT_SA_NAME=$(kubectl get sa ${VAULT_DEPLOYMENT} -o jsonpath="{.secrets[*]['name']}")
   export TF_VAR_token_reviewer_jwt=$(kubectl get secret $VAULT_SA_NAME -o jsonpath="{.data.token}" | base64 --decode; echo)
