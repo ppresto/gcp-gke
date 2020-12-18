@@ -63,13 +63,6 @@ EOF
 helm repo add hashicorp https://helm.releases.hashicorp.com
 helm install -f ${DIR}/../tmp/us-central-values.yaml us-central hashicorp/consul
 
-# Wait for consul server pod to be ready
-status=""
-while [ -z "${status}" ]; do
-  sleep 3
-  status=$(kubectl get pods | grep "uscentral-consul-server.*1/1")
-done
-
 ###########
 # Set up Postgres Products DB Kubernetes Deployment
 ###########
@@ -386,6 +379,13 @@ metadata:
   name: products-api
 automountServiceAccountToken: true
 EOF
+
+# Wait for consul server pod to be ready
+status=""
+while [ -z "${status}" ]; do
+  sleep 3
+  status=$(kubectl get pods | grep "us-central-consul-server.*1/1")
+done
 
 kubectl apply -f ${DIR}/../tmp/hashicups/products-api-service-account.yml
 
