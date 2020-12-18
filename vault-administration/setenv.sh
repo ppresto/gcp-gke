@@ -14,7 +14,7 @@ export VAULT_SKIP_VERIFY=true
 
 # Kubernetes
   export TF_VAR_k8s_path="k8s"
-  export TF_VAR_kubernetes_host=$(kubectl cluster-info | grep -i kubernetes | awk '{ print $NF }')
+  export TF_VAR_kubernetes_host=$(kubectl config view --minify=true -o jsonpath='{.clusters[].cluster.server}')
   export VAULT_DEPLOYMENT=$(helm list -o json | jq -r '.[].name')
   export VAULT_SA_NAME=$(kubectl get sa ${VAULT_DEPLOYMENT} -o jsonpath="{.secrets[*]['name']}")
   export TF_VAR_token_reviewer_jwt=$(kubectl get secret $VAULT_SA_NAME -o jsonpath="{.data.token}" | base64 --decode; echo)
