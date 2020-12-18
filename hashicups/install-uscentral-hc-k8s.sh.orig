@@ -2,10 +2,6 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 echo $DIR
-###########
-# Create a directory for the k8s .yaml files
-###########
-mkdir -p ${DIR}/../tmp/hashicups
 
 ###########
 # Install Postgres client for testing
@@ -27,7 +23,7 @@ mkdir -p ${DIR}/../tmp/hashicups
 ###########
 # Configure Consul Helm Chart values
 ###########
-cat <<-EOF > ${DIR}/../tmp/us-central-values.yaml
+cat <<-EOF > ${DIR}/us-central-values.yaml
 global:
   datacenter: uscentral
   #image: "consul:1.8.2"
@@ -61,7 +57,7 @@ EOF
 # Install Consul with the Helm Chart
 ###########
 helm repo add hashicorp https://helm.releases.hashicorp.com
-helm install -f ${DIR}/../tmp/us-central-values.yaml us-central hashicorp/consul
+helm install -f ${DIR}/us-central-values.yaml us-central hashicorp/consul
 
 ###########
 # Set up Postgres Products DB Kubernetes Deployment
@@ -166,16 +162,16 @@ spec:
         vault.hashicorp.com/agent-inject-status: "update"
         vault.hashicorp.com/namespace: "uscentral"
         vault.hashicorp.com/auth-path: "auth/k8s"
-        vault.hashicorp.com/agent-inject-secret-db-creds: "kv/db/postgres/product-db-creds"
+        vault.hashicorp.com/agent-inject-secret-db-creds: "kv/data/db/postgres/product-db-creds"
         vault.hashicorp.com/agent-inject-template-db-creds: |
           {
-          {{ with secret "kv/db/postgres/product-db-creds" -}}
-            "db_connection": "host=localhost port=5432 user={{ .Data.username }} password={{ .Data.password }} dbname=products sslmode=disable",
+          {{ with secret "kv/data/db/postgres/product-db-creds" -}}
+            "db_connection": "host=localhost port=5432 user={{ .Data.data.username }} password={{ .Data.data.password }} dbname=products sslmode=disable",
             "bind_address": ":9090",
             "metrics_address": ":9103"
           {{- end }}
           }
-        vault.hashicorp.com/role: "products-api"
+        vault.hashicorp.com/role: "k8s"
     spec:
       serviceAccountName: products-api
       containers:
