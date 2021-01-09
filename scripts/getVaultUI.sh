@@ -8,7 +8,7 @@
 
 # Get Root Token
 context=$(kubectl config current-context)
-if [[ $context == "primary" ]]; then
+if [[ $context == "usw" ]]; then
     token=$(cat /root/gcp-gke/us-west/tmp/cluster-keys.json | jq -r ".root_token")
 else
     token=$(cat /root/gcp-gke/us-central/tmp/cluster-keys.json | jq -r ".root_token")
