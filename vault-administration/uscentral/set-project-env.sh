@@ -1,7 +1,7 @@
 #!/bin/bash
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 VAULT_NAMESPACE="uscentral"
-kubectl config use-context dr
+kubectl config use-context usc
 
 # Get Root Token
 token=$(cat /root/gcp-gke/us-west/tmp/root.token.primary.json)

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Get Root Token
-kubectl config use-context primary
+kubectl config use-context usw
 token=$(cat /root/gcp-gke/us-west/tmp/root.token.primary.json)
 
 # Get Vault Address.  Wait for External IP to be available

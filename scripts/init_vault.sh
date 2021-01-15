@@ -6,21 +6,15 @@ PWD=$(echo $PWD)
 timeout=420
 vRunning=""
 config="$HOME/.kube/config"
+# GITDIR should be the working directory with your terraform.tfstate file.
+GITDIR=${PWD}
 
 # Set this to one of your pod names.
-if [[ $(helm list -o json | jq -r '.[].name' | grep vault) ]]; then
-    init_inst="$(helm list -o json | jq -r '.[].name' | grep vault)-0"
-else
-    init_inst="vault-0"
-fi
-
-# GITDIR should be the working directory with your terraform.tfstate file.
 if [[ ! -z $1 ]]; then
-    GITDIR="${1}"
+    export v_cluster_name="${1}"
 else
-    GITDIR=${PWD}
+    export v_cluster_name="vault"
 fi
-
 
 
 # K8s namespace is needed to lookup vault information
@@ -36,9 +30,13 @@ if [[ -f ${GITDIR}/setkubectl.sh ]]; then
 else
     echo "Init your K8s Envionment (${GITDIR}/setkubectl.sh)"
 fi
+
 # Find Active Vault Node
-if [[ $(kubectl --kubeconfig ${config} --namespace ${ns} get pod --selector="vault-active=true" --output=jsonpath={.items..metadata.name}) ]]; then
-    init_inst=$(kubectl --kubeconfig ${config} --namespace ${ns} get pod --selector="vault-active=true" --output=jsonpath={.items..metadata.name})
+if [[ $(helm list -o json | jq -r '.[].name' | grep ${v_cluster_name}) ]]; then
+    init_inst=$(kubectl --kubeconfig ${config} --namespace ${ns} get pod -l vault-active=true --output=jsonpath={.items..metadata.name} | grep ${v_cluster_name})
+    #init_inst="${v_cluster_name}-0"
+else
+    init_inst="vault-0"
 fi
 
 # Initialize Vault
@@ -52,7 +50,7 @@ isVaultRunning () {
     vRunning=1
     while [ ${timeout} -ge 1 ]
     do
-        if [[ $(kubectl get --kubeconfig ${config} --namespace ${ns} pods -o json  | jq -r '.items[] | select(.status.phase != "Running") | .metadata.namespace + "/" + .metadata.name' | wc -l) -gt 0 ]]; then
+        if [[ $(kubectl get --kubeconfig ${config} --namespace ${ns} pods -o json  | jq -r '.items[] | select(.metadata.labels."app.kubernetes.io/instance" == env.v_cluster_name) | select(.status.phase != "Running") | .metadata.namespace + "/" + .metadata.name' | wc -l) -gt 0 ]]; then
             timeout=$((${timeout}-5))
             sleep 5
             kubectl get pods --kubeconfig ${config} --namespace ${ns}
@@ -74,9 +72,9 @@ initializeVault () {
         echo "Vault Status: $vaultInitStatus"
         echo "Initializing Vault..."
         echo
-        kubectl exec --kubeconfig ${config} --namespace ${ns} ${init_inst} -- vault operator init -key-shares=1 -key-threshold=1 -format=json > ${GITDIR}/tmp/cluster-keys.json
+        kubectl exec --kubeconfig ${config} --namespace ${ns} ${init_inst} -- vault operator init -key-shares=1 -key-threshold=1 -format=json > ${GITDIR}/tmp/${v_cluster_name}-cluster-keys.json
         sleep 5
-        export VAULT_ROOT_TOKEN=$(cat ${GITDIR}/tmp/cluster-keys.json | jq -r ".root_token")
+        export VAULT_ROOT_TOKEN=$(cat ${GITDIR}/tmp/${v_cluster_name}-cluster-keys.json | jq -r ".root_token")
     else
         echo "Vault Initialized : Skipping..."
         echo
@@ -88,7 +86,8 @@ initializeVault () {
 joinRaftPeers() {
     echo
     echo "Checking for Raft Peers ..."
-    podList=$(kubectl --kubeconfig ${config} --namespace ${ns} get pods -o json  | jq -r '.items[] | select(.metadata.labels.component == "server")|.metadata.name')
+    podList=$(kubectl get pods -o json  | jq -r '.items[] | select(.metadata.labels."app.kubernetes.io/instance" == env.v_cluster_name) | select(.metadata.labels.component == "server")|.metadata.name')
+    #podList=$(kubectl --kubeconfig ${config} --namespace ${ns} get pods -o json  | jq -r '.items[] | select(.metadata.labels.component == "server")|.metadata.name')
     podsNotReady=$(kubectl --kubeconfig ${config} --namespace ${ns} get pods -o json  | jq -r '.items[] | select(.status.phase == "Running" and ([ .status.containerStatuses[] | select(.ready == false )] | length ) == 1 ) | .metadata.namespace + "/" + .metadata.name')
     peersNotInit=$(kubectl --kubeconfig ${config} --namespace ${ns} get pods -o json  | jq -r '.items[] | select(.status.phase == "Running" and select(.metadata.labels."vault-initialized" == "false" )) | .metadata.name')
     #echo "Pods Not Read: kubectl --kubeconfig ${config} --namespace ${ns} get pods -o json  | jq -r '.items[] | select(.status.phase == \"Running\" and ([ .status.containerStatuses[] | select(.ready == false )] | length ) == 1 ) | .metadata.namespace + \"/\" + .metadata.name'"
@@ -112,7 +111,7 @@ joinRaftPeers() {
 
 getRaftListPeers() {
     echo "\nVault List Peers"
-    VAULT_ROOT_TOKEN=$(cat ${GITDIR}/tmp/cluster-keys.json | jq -r ".root_token")
+    VAULT_ROOT_TOKEN=$(cat ${GITDIR}/tmp/${v_cluster_name}-cluster-keys.json | jq -r ".root_token")
     echo $?
     if [[ -z $VAULT_ROOT_TOKEN ]]; then
         echo "Failed to get login token"
@@ -126,20 +125,20 @@ getRaftListPeers() {
 installLicense () {
     # Login and Get Token
     echo -e "\n Logging into Vault to get Token"
-    VAULT_ROOT_TOKEN=$(cat ${GITDIR}/tmp/cluster-keys.json | jq -r ".root_token")
+    VAULT_ROOT_TOKEN=$(cat ${GITDIR}/tmp/${v_cluster_name}-cluster-keys.json | jq -r ".root_token")
     echo $?
     if [[ -z $VAULT_ROOT_TOKEN ]]; then
         echo "Failed to get root token for login"
         exit
     fi
 
-    kubectl exec --kubeconfig ${config} --namespace ${ns} -ti ${init_inst} -- vault login ${VAULT_ROOT_TOKEN} -format="json" | tee ${GITDIR}/tmp/vault-active-token.json
-    VAULT_TOKEN=$(jq -r '.auth.client_token' < ${GITDIR}/tmp/vault-active-token.json)
+    kubectl exec --kubeconfig ${config} --namespace ${ns} -ti ${init_inst} -- vault login ${VAULT_ROOT_TOKEN} -format="json" | tee ${GITDIR}/tmp/${v_cluster_name}-active-token.json
+    VAULT_TOKEN=$(jq -r '.auth.client_token' < ${GITDIR}/tmp/${v_cluster_name}-active-token.json)
     if [[ -z $VAULT_TOKEN ]]; then
         echo "Failed to get login token"
         exit
     fi
-    
+
     echo -e "\nSetting up port-forward to ${init_inst}"
     kubectl port-forward --kubeconfig ${config} --namespace ${ns} ${init_inst} 8200:8200 &
     sleep 5
