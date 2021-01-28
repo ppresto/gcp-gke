@@ -9,7 +9,7 @@ Sometimes its a good idea to create Vault namespaces by team to put administrati
 
 
 ## PreReq
-This excersize assumes you have performance replication setup b/w a primary and secondary.  The first track here can set that up for you. [Vault DR Multi-Region GKE Clusters](https://play.instruqt.com/hashicorp/tracks/poc-vault-gke-dr-multi-region)
+This excersize assumes you have performance replication setup b/w a primary and secondary.  The first track here can set that up for you. [Vault DR Multi-Region GKE Clusters](https://play.instruqt.com/hashicorp/tracks/vault-gke-pr-multi-region-presto)
 
 ## Create Namespace
 Each namespace will have its own AppRole so we can manage then with different credentials that can be dynamically generated at the time of the change.  Each namespace is configured using its own <namespace>.tf file.  Rename the namespace files you want terraform to find and build.
@@ -46,7 +46,7 @@ Get the secondary URL
 ```
 cd us-central
 ./setkubectl.sh
-echo "http://$(kubectl get svc vault-dr-ui --template="{{range .status.loadBalancer.ingress}}{{.ip}}{{end}}"):8200"
+echo "http://$(kubectl get svc vault-usc-ui --template="{{range .status.loadBalancer.ingress}}{{.ip}}{{end}}"):8200"
 ```
 Login using userpass (root / root).  Check out the auth methods, policies, and kv-v2 secrets we will need to run hashicups
 
