@@ -7,15 +7,18 @@ GCP.
 This sample repo also creates a VPC and subnet for the GKE cluster. This is not
 required but highly recommended to keep your GKE cluster isolated.
 
-## Install and configure GCloud
+## Install PreReqs
+- terraform
+- gcloud
+- helm
+- kubectl
+- jq
 
-First, install the [Google Cloud CLI](https://cloud.google.com/sdk/docs/quickstarts) 
-and initialize it.
+Notes: [Google Cloud CLI](https://cloud.google.com/sdk/docs/quickstarts) 
 
 ```shell
 $ gcloud init
 ```
-
 Once you've initialized gcloud (signed in, selected project), add your account 
 to the Application Default Credentials (ADC). This will allow Terraform to access
 these credentials to provision resources on GCloud.
@@ -23,52 +26,37 @@ these credentials to provision resources on GCloud.
 ```shell
 $ gcloud auth application-default login
 ```
+Note: To see the full gcloud authentication workflow review ./scripts/setkubectl.sh
 
-## Initialize Terraform workspace and provision GKE Cluster
-
-# Notes
-
+## Initialize Terraform env and provision the us-west GKE Cluster
 ```
-kubectl config use-context
-kubectl config get-contexts
-kubectl config rename-context 
+cd us-west
+./setkubectl.sh
+terraform init
+terraform apply -auto-approve
 ```
+To test multi-region dr or performance replication use cases you can provision a second GKE cluster in us-central.  cd ./us-central and provision in the background to build both clusters in parallel and save time :)
 
-## DR Replication
-
-Get Status on primary or DR
+If you have multiple clusters you will need to manage them independently.  We are using --context [primary, dr] to do this.  Here are some commands that can help you get familiar.
 ```
-vault read sys/replication/performance/status
-```
-
-### DR Replication with Wrapped Token
-```
-vault write sys/replication/dr/primary/secondary-token id=EU-2 | tee /root/config-files/vault/wrapping_token.txt
-
-vault read sys/replication/dr/status
-
-scp -o StrictHostKeyChecking=no vault-eu-1:/root/config-files/vault/wrapping_token.txt /root/config-files/vault/wrapping_token.txt
-wrapping_token=$(cat /root/config-files/vault/wrapping_token.txt | grep wrapping_token: | cut -d' ' -f19)
-```
-### DR Replication
-```
-# eu1
-vault write -f sys/replication/dr/primary/enable
-vault write sys/replication/dr/primary/secondary-token id=EU-2 | tee /root/config-files/vault/wrapping_token.txt
-
-# eu2
-#To avoid issues with newlines in the wrapping token, let's copy it from the EU-1 server to the EU-2 #server and put it in an environment variable by running these commands on the "EU-2" server:
-
-scp -o StrictHostKeyChecking=no vault-eu-1:/root/config-files/vault/wrapping_token.txt /root/config-files/vault/wrapping_token.txt
-
-wrapping_token=$(cat /root/config-files/vault/wrapping_token.txt | grep wrapping_token: | cut -d' ' -f19)
-
-vault write sys/replication/dr/secondary/enable ca_file=/etc/consul.d/tls/consul-agent-ca.pem token=$wrapping_token
-
-vault read sys/replication/dr/status
+kubectl config get-context
+kubectl config use-context primary
 ```
 
-### DR Replication with public key
+## Use Cases with GKE
+[Vault DR Multi-Region GKE Clusters](https://play.instruqt.com/hashicorp/tracks/poc-vault-gke-dr-multi-region)
+- Setup GKE clusters
+- Setup Vault DR across GKE clusters
+- DR demote, promote, and rebuild primary from scratch
+
+Review README.md files for additional use cases
+- Performance replication
+- Vault Namespaces
+- Vault Terraform provider
+- Vault K8s Auth + Pod secret injection
+
+## Notes
+### DR Replication setup notes using public key
 ```
 # na1
 vault write -f sys/replication/dr/primary/enable
