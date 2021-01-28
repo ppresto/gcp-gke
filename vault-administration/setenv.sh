@@ -1,8 +1,9 @@
 #!/bin/bash
 
 # Get Root Token
+v_cluster=vault-usw
 kubectl config use-context usw
-token=$(cat /root/gcp-gke/us-west/tmp/root.token.primary.json)
+token=$(cat /root/gcp-gke/us-west/tmp/${v_cluster}-cluster-keys.json | jq -r ".root_token")
 
 # Get Vault Address.  Wait for External IP to be available
 SERVICE=$(kubectl get svc -o json | jq -r '.items[].metadata | select(.name | contains("ui")) | .name')

@@ -1,24 +1,21 @@
 #!/bin/bash
 
-# Param 1 is K8s service
-[ -z "${1}" ] && echo "Missing Param: getVaultUI.sh <k8s_svc_name>" && exit 1
-#if [[ -z $1 ]]; then
-#    exit 1
-#fi
+# Param 1 is helm release name (ex: vault-usw)
+[ -z "${1}" ] && echo "Usage: getVaultUI.sh <vault_helm_release>" && exit 1
 
 # Get Root Token
 context=$(kubectl config current-context)
 if [[ $context == "usw" ]]; then
-    token=$(cat /root/gcp-gke/us-west/tmp/cluster-keys.json | jq -r ".root_token")
+    token=$(cat /root/gcp-gke/us-west/tmp/${1}-cluster-keys.json | jq -r ".root_token")
 else
-    token=$(cat /root/gcp-gke/us-central/tmp/cluster-keys.json | jq -r ".root_token")
+    token=$(cat /root/gcp-gke/us-central/tmp/${1}-cluster-keys.json | jq -r ".root_token")
 fi
 
 # Wait for External IP to be available
 external_ip=""
 while [ -z $external_ip ]; do
   echo "Waiting for Vault External URL ..."
-  external_ip=$(kubectl get svc $1 --template="{{range .status.loadBalancer.ingress}}{{.ip}}{{end}}")
+  external_ip=$(kubectl get svc ${1}-ui --template="{{range .status.loadBalancer.ingress}}{{.ip}}{{end}}")
   [ -z "$external_ip" ] && sleep 10
 done
 

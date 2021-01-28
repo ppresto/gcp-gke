@@ -34,7 +34,9 @@ fi
 # Find Active Vault Node
 if [[ $(helm list -o json | jq -r '.[].name' | grep ${v_cluster_name}) ]]; then
     init_inst=$(kubectl --kubeconfig ${config} --namespace ${ns} get pod -l vault-active=true --output=jsonpath={.items..metadata.name} | grep ${v_cluster_name})
-    #init_inst="${v_cluster_name}-0"
+    if [[ ${init_inst} == "" ]]; then
+        init_inst="${v_cluster_name}-0"
+    fi
 else
     init_inst="vault-0"
 fi
