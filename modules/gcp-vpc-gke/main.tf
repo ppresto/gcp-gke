@@ -11,8 +11,8 @@ resource "google_container_cluster" "primary" {
   subnetwork = google_compute_subnetwork.subnet.name
 
   master_auth {
-    username = var.gke_username
-    password = var.gke_password
+    #username = var.gke_username
+    #password = var.gke_password
 
     client_certificate_config {
       issue_client_certificate = true
