@@ -8,7 +8,7 @@ injector:
   # Use the Vault K8s Image https://github.com/hashicorp/vault-k8s/
   image:
     repository: "hashicorp/vault-k8s"
-    tag: "latest"
+    tag: "0.14.1"
 
   #resources:
   #    requests:
